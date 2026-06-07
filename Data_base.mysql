@@ -1,0 +1,186 @@
+-- 1. Sélectionner ta base
+USE projet_match;
+
+-- 2. Table utilisateur
+CREATE TABLE UTILISATEUR (
+    id_utilisateur INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    telephone VARCHAR(20) NOT NULL UNIQUE,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    photo_profil VARCHAR(255),
+    filiere ENUM('IA', 'IM', 'GL', 'SE&IoT', 'SI') NOT NULL,
+    niveau ENUM('L1', 'L2', 'L3') NOT NULL,
+    bio TEXT,
+    centre_interet TEXT,
+    date_inscription DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- 3. Table COMPÉTENCE
+CREATE TABLE COMPETENCE (
+    id_competence INT PRIMARY KEY AUTO_INCREMENT
+     
+);
+
+-- 4. Table UTILISATEUR_COMPÉTENCE
+CREATE TABLE UTILISATEUR_COMPETENCE (
+    id_util_comp INT PRIMARY KEY AUTO_INCREMENT,
+    id_utilisateur INT NOT NULL UNIQUE,
+    id_competence INT NOT NULL UNIQUE ,
+    type_competence ENUM('point_fort', 'point_faible') NOT NULL UNIQUE ,
+    FOREIGN KEY (id_utilisateur) REFERENCES UTILISATEUR(id_utilisateur),
+    FOREIGN KEY (id_competence) REFERENCES COMPETENCE(id_competence)
+); 
+ 
+-- 5. Table DISPONIBILITÉ
+CREATE TABLE DISPONIBILITE (
+    id_disponibilite INT PRIMARY KEY AUTO_INCREMENT,
+    id_utilisateur INT NOT NULL,
+    jour ENUM('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche') NOT NULL,
+    heure_debut TIME NOT NULL,
+    heure_fin TIME NOT NULL,
+    FOREIGN KEY (id_utilisateur) REFERENCES UTILISATEUR(id_utilisateur)
+);
+
+-- 6. Table OFFRE_MENTORAT
+CREATE TABLE OFFRE_MENTORAT (
+    id_offre INT PRIMARY KEY AUTO_INCREMENT,
+    id_utilisateur INT NOT NULL,
+    id_competence INT NOT NULL,
+    type_offre ENUM('offre', 'demande') NOT NULL,
+    format ENUM('présentiel', 'en ligne', 'les deux') NOT NULL,
+    statut ENUM('ouverte', 'fermée') NOT NULL,
+    date_publication DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_utilisateur) REFERENCES UTILISATEUR(id_utilisateur),
+    FOREIGN KEY (id_competence) REFERENCES COMPETENCE(id_competence)
+);
+
+-- 7. Table MATCHING
+CREATE TABLE MATCHING (
+    id_matching INT PRIMARY KEY AUTO_INCREMENT,
+    id_mentor INT NOT NULL,
+    id_mentore INT NOT NULL,
+    id_offre INT NOT NULL,
+    score DECIMAL(5,2) NOT NULL CHECK (score >= 0 AND score <= 100),
+    statut ENUM('proposé', 'accepté', 'refusé') NOT NULL,
+    date_matching DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_mentor) REFERENCES UTILISATEUR(id_utilisateur),
+    FOREIGN KEY (id_mentore) REFERENCES UTILISATEUR(id_utilisateur),
+    FOREIGN KEY (id_offre) REFERENCES  OFFRE_MENTORAT(id_offre)
+);
+
+-- 8. Table CONVERSATION
+CREATE TABLE CONVERSATION (
+    id_conversation INT PRIMARY KEY AUTO_INCREMENT,
+    id_utilisateur1 INT NOT NULL,
+    id_utilisateur2 INT NOT NULL,
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_utilisateur1) REFERENCES UTILISATEUR(id_utilisateur),
+    FOREIGN KEY (id_utilisateur2) REFERENCES UTILISATEUR(id_utilisateur)
+);
+
+-- 9. Table MESSAGE
+CREATE TABLE MESSAGE (
+    id_message INT PRIMARY KEY AUTO_INCREMENT,
+    id_conversation INT NOT NULL,
+    id_expediteur INT NOT NULL,
+    contenu TEXT NOT NULL,
+    date_envoi DATETIME DEFAULT CURRENT_TIMESTAMP,
+    lu BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_conversation) REFERENCES CONVERSATION(id_conversation),
+    FOREIGN KEY (id_expediteur) REFERENCES UTILISATEUR(id_utilisateur)
+);
+
+-- Modifier la table pour ajouter la catégorie
+ALTER TABLE COMPETENCE
+ADD COLUMN categorie VARCHAR(100) NOT NULL;
+
+-- Insertion des 57 matières par catégorie
+INSERT INTO COMPETENCE (nom_competence, categorie) VALUES
+
+-- Mathématiques & Sciences fondamentales
+('Logique, arithmétique et applications', 'Mathématiques & Sciences fondamentales'),
+('Algèbre linéaire et applications', 'Mathématiques & Sciences fondamentales'),
+('Probabilités, statistiques et analyse combinatoire', 'Mathématiques & Sciences fondamentales'),
+('Équations différentielles et calcul intégral', 'Mathématiques & Sciences fondamentales'),
+('Suites et séries numériques', 'Mathématiques & Sciences fondamentales'),
+('Mathématiques pour informatique', 'Mathématiques & Sciences fondamentales'),
+('Statistiques et probabilités pour la science des données', 'Mathématiques & Sciences fondamentales'),
+
+-- Programmation
+('Algorithmique et langage C', 'Programmation'),
+('Programmation Python', 'Programmation'),
+('Programmation orientée objet (Java, C++)', 'Programmation'),
+('Structures de données et applications (C/Python)', 'Programmation'),
+('Programmation avancée (Java, Python, R)', 'Programmation'),
+('Programmation graphique (Qt/C++)', 'Programmation'),
+
+-- Réseaux & Systèmes
+('Architecture et topologie des réseaux', 'Réseaux & Systèmes'),
+('Systèmes d\'exploitation (Windows/Linux)', 'Réseaux & Systèmes'),
+('Administration systèmes et réseaux', 'Réseaux & Systèmes'),
+('Ingénierie des réseaux (CISCO CCNA)', 'Réseaux & Systèmes'),
+('Routage WAN, commutation', 'Réseaux & Systèmes'),
+('Réseaux sans fil et IoT (RCSF)', 'Réseaux & Systèmes'),
+('Systèmes répartis, embarqués et temps réel', 'Réseaux & Systèmes'),
+('Technologies Cloud (Kubernetes, Serverless)', 'Réseaux & Systèmes'),
+
+-- Bases de données
+('SGBD et langage SQL', 'Bases de données'),
+('Bases de données relationnelles et NoSQL', 'Bases de données'),
+('Bases de données avancées', 'Bases de données'),
+('Big Data (bases et outils)', 'Bases de données'),
+('Administration BDD (Oracle, PostgreSQL)', 'Bases de données'),
+('Bases de données distribuées', 'Bases de données'),
+('BDD multimédia et web sémantique', 'Bases de données'),
+
+-- Sécurité Informatique
+('Politique de sécurité des SI', 'Sécurité Informatique'),
+('Sécurité des réseaux (WEP, WPA, WPS, BAS)', 'Sécurité Informatique'),
+('Cryptographie et applications', 'Sécurité Informatique'),
+('Sécurité Web et Mobile (OWASP)', 'Sécurité Informatique'),
+('Audit et normes de sécurité', 'Sécurité Informatique'),
+('Management de la sécurité du SI', 'Sécurité Informatique'),
+('Sécurité des applications et reverse engineering', 'Sécurité Informatique'),
+('DevSecOps', 'Sécurité Informatique'),
+('Blockchain et applications', 'Sécurité Informatique'),
+
+-- Génie Logiciel & Qualité
+('Bases du génie logiciel', 'Génie Logiciel & Qualité'),
+('Méthode Agile Scrum', 'Génie Logiciel & Qualité'),
+('Assurance qualité et test logiciel', 'Génie Logiciel & Qualité'),
+('Cycle de vie d\'un logiciel', 'Génie Logiciel & Qualité'),
+('Fiabilité et sécurité logicielle', 'Génie Logiciel & Qualité'),
+('Génie logiciel et PGI/ERP', 'Génie Logiciel & Qualité'),
+
+-- Intelligence Artificielle & Data
+('Concepts et applications de l\'IA', 'Intelligence Artificielle & Data'),
+('Apprentissage automatique (supervisé/non supervisé)', 'Intelligence Artificielle & Data'),
+('Réseaux de neurones artificiels', 'Intelligence Artificielle & Data'),
+('Data Mining', 'Intelligence Artificielle & Data'),
+('Traitement du signal et d\'image', 'Intelligence Artificielle & Data'),
+('Outils cloud pour la data science', 'Intelligence Artificielle & Data'),
+('Techniques de résolution par la recherche', 'Intelligence Artificielle & Data'),
+
+-- Web & Infographie
+('Technologies web avancées', 'Web & Infographie'),
+('Développement web (HTML, CSS, frameworks)', 'Web & Infographie'),
+('Technologies mobiles avancées', 'Web & Infographie'),
+('Infographie et développement web appliqué', 'Web & Infographie'),
+
+-- Gestion & Méthodologie
+('Gestion de projets informatiques', 'Gestion & Méthodologie'),
+('Méthodes d\'analyse et de conception (UML, Merise)', 'Gestion & Méthodologie'),
+('Méthodologie de rédaction de mémoire', 'Gestion & Méthodologie'),
+('Recherche opérationnelle', 'Gestion & Méthodologie'),
+('Interfaces homme-machine', 'Gestion & Méthodologie'),
+('Entrepreneuriat et plan d\'affaires', 'Gestion & Méthodologie'),
+('Stage et discipline', 'Gestion & Méthodologie'),
+
+-- Culture générale & Transversal
+('Anglais technique et communication scientifique', 'Culture générale & Transversal'),
+('Communication managériale', 'Culture générale & Transversal'),
+('Déontologie et droit lié aux TIC', 'Culture générale & Transversal'),
+('Techniques d\'expression écrite et orale', 'Culture générale & Transversal'),
+('Maintenance des appareils électroniques', 'Culture générale & Transversal');
