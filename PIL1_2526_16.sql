@@ -302,6 +302,3 @@ INSERT INTO COMPETENCE (id_categorie, nom_competence) VALUES                   /
     (10, 'Déontologie et droit lié aux TIC'),
     (10, "Techniques d'expression écrite et orale"),
     (10, 'Maintenance des appareils électroniques');
-
-
-SELECT * FROM CATEGORIE;          /* Affiche les données de la table CATEGORIE */
