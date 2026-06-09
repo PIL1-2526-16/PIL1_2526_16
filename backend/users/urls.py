@@ -9,4 +9,5 @@ urlpatterns = [
     path('profil/modifier/', views.modifier_profil, name='modifier_profil'),
     path('mot-de-passe/reinitialiser/', views.demande_reinitialisation, name='demande_reinitialisation'),
     path('mot-de-passe/nouveau/<uidb64>/<token>/', views.nouveau_mot_de_passe, name='nouveau_mot_de_passe'),
+    path('', views.accueil, name = 'accueil'),
 ]

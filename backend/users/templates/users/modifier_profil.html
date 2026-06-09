@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modification du profil - IFRI MentorLink</title>
+    <title>Modifier mon profil - IFRI MentorLink</title>
 </head>
 <body>
     <h1>Modifier mon profil</h1>
@@ -17,9 +16,62 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
+
+        <h2>Disponibilités</h2>
+        <div id="disponibilites">
+            <div class="dispo">
+                <select name="jours">
+                    <option value="Lundi">Lundi</option>
+                    <option value="Mardi">Mardi</option>
+                    <option value="Mercredi">Mercredi</option>
+                    <option value="Jeudi">Jeudi</option>
+                    <option value="Vendredi">Vendredi</option>
+                    <option value="Samedi">Samedi</option>
+                    <option value="Dimanche">Dimanche</option>
+                </select>
+                <input type="time" name="heures_debut">
+                <input type="time" name="heures_fin">
+            </div>
+        </div>
+        <button type="button" onclick="ajouterDispo()">+ Ajouter une disponibilité</button>
+
+        <h2>Compétences</h2>
+        <select name="competences" multiple>
+            {% for competence in competences_disponibles %}
+                <option value="{{ competence.id }}" 
+                    {% if competence in competences_actuelles %}selected{% endif %}>
+                    {{ competence.nom_competence }}
+                </option>
+            {% endfor %}
+        </select>
+        <select name="type_competence">
+            <option value="point_fort">Point fort</option>
+            <option value="point_faible">Point faible</option>
+        </select>
+
         <button type="submit">Enregistrer</button>
     </form>
 
     <a href="{% url 'profil' %}">Annuler</a>
+
+    <script>
+        function ajouterDispo() {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <select name="jours">
+                    <option value="Lundi">Lundi</option>
+                    <option value="Mardi">Mardi</option>
+                    <option value="Mercredi">Mercredi</option>
+                    <option value="Jeudi">Jeudi</option>
+                    <option value="Vendredi">Vendredi</option>
+                    <option value="Samedi">Samedi</option>
+                    <option value="Dimanche">Dimanche</option>
+                </select>
+                <input type="time" name="heures_debut">
+                <input type="time" name="heures_fin">
+            `;
+            document.getElementById('disponibilites').appendChild(div);
+        }
+    </script>
 </body>
 </html>
