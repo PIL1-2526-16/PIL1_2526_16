@@ -1,0 +1,51 @@
+/* ============================================================
+   navbar.css — Barre de navigation sticky, menu
+   ============================================================ */
+
+.navbar-mentor {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0.75rem 2rem;
+}
+
+.navbar-mentor .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-mentor .nav-links a {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.navbar-mentor .nav-links a:hover {
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .navbar-mentor {
+    padding: 0.65rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .navbar-mentor .nav-links {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .navbar-mentor .nav-links a {
+    white-space: nowrap;
+    font-size: 0.8rem;
+  }
+}

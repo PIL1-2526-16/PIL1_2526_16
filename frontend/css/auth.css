@@ -1,0 +1,128 @@
+/* ============================================================
+   auth.css — Layout pages login et register
+   ============================================================ */
+
+.auth-bg {
+  background: var(--gradient);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg);
+}
+
+.register-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  color: var(--gray-400);
+  font-size: 0.85rem;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+/* Etapes d'inscription */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.step {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  color: var(--gray-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.step.active {
+  background: var(--gradient);
+  color: #fff;
+}
+.step.done {
+  background: #dcfce7;
+  color: #166534;
+}
+.step-line {
+  width: 40px;
+  height: 2px;
+  background: var(--gray-200);
+}
+.step-line.done {
+  background: var(--primary);
+}
+
+.tag-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--gray-200);
+  color: var(--gray-600);
+  transition: all 0.2s;
+  margin: 3px;
+  user-select: none;
+}
+.tag-skill.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+.tag-skill.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+.dispo-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--gray-200);
+  color: var(--gray-600);
+  transition: all 0.2s;
+  margin: 4px;
+  user-select: none;
+}
+.dispo-slot.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+.category-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0.75rem 0 0.3rem;
+  width: 100%;
+}

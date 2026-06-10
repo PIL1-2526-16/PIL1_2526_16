@@ -1,0 +1,77 @@
+/* ============================================================
+   profil.css — En-tete profil, disponibilites, bio, stats
+   ============================================================ */
+
+.profile-header {
+  background: var(--gradient);
+  padding: 3rem 2rem 5rem;
+  text-align: center;
+  color: #fff;
+}
+.profile-card-floating {
+  margin-top: -3rem;
+}
+
+.availability-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 50px;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin: 3px;
+}
+.availability-slot.active {
+  background: var(--gradient);
+  color: #fff;
+}
+
+.tag-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--gray-200);
+  color: var(--gray-600);
+  transition: all 0.2s;
+  margin: 3px;
+}
+.tag-edit.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+.tag-edit:hover { border-color: var(--primary); }
+
+.tag-edit input[type="checkbox"] { display: none; }
+.tag-edit:has(input:checked) { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+.dispo-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.dispo-row select, .dispo-row input { flex: 1; }
+.dispo-row .btn-remove-dispo {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.edit-input {
+  width: 100%;
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.88rem;
+  font-family: 'Poppins', sans-serif;
+  color: var(--gray-800);
+  outline: none;
+  margin-top: 0.5rem;
+}

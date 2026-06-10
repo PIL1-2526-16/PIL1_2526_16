@@ -1,0 +1,10 @@
+/* ============================================================
+   hero.css — Hero et sections de la page d'accueil
+   ============================================================ */
+
+.hero-gradient {
+  background: var(--gradient);
+  color: #fff;
+  padding: 4.5rem 1rem;
+  text-align: center;
+}

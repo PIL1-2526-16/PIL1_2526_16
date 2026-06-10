@@ -1,0 +1,106 @@
+/* ============================================================
+   base.css — Variables CSS, reset, typographie globale
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Couleurs principales */
+  --primary: #1a6fc4;
+  --primary-dark: #15579c;
+  --primary-light: #e8f1fb;
+  --secondary: #0ea5e9;
+
+  /* Accent (teal) */
+  --accent: #0ea5e9;
+  --accent-dark: #0c7ea8;
+  --accent-soft: #e0f6fd;
+
+  /* Niveaux de gris */
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-400: #94a3b8;
+  --gray-600: #475569;
+  --gray-800: #1e293b;
+
+  /* Etats */
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  /* Degrades */
+  --gradient: linear-gradient(135deg, #1a6fc4 0%, #0ea5e9 100%);
+  --gradient-soft: linear-gradient(135deg, rgba(26,111,196,0.08) 0%, rgba(14,165,233,0.08) 100%);
+
+  /* Rayons et ombres */
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow-md: 0 4px 16px rgba(30,41,59,0.08);
+  --shadow-lg: 0 12px 32px rgba(30,41,59,0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--gray-800);
+  background: var(--gray-50);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  color: var(--gray-800);
+}
+
+/* Marque MentorLink */
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--gray-800) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar-brand span {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Titres de section */
+.section-title {
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 0.25rem;
+}
+.section-subtitle {
+  color: var(--gray-400);
+  font-size: 0.95rem;
+}
+
+/* Messages Django */
+.messages {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+.alert-mentor {
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+.alert-success.alert-mentor { background: #dcfce7; color: #166534; }
+.alert-error.alert-mentor, .alert-mentor.alert-danger { background: #fee2e2; color: #991b1b; }
+.alert-info.alert-mentor { background: var(--primary-light); color: var(--primary-dark); }

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+  <defs>
+    <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1E3A8A"/>
+      <stop offset="60%"  stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <!-- Fond rond -->
+  <circle cx="20" cy="20" r="20" fill="url(#lg)"/>
+  <!-- Deux personnes stylisées reliées par un trait -->
+  <!-- Personne gauche -->
+  <circle cx="11" cy="14" r="4" fill="white" opacity="0.95"/>
+  <path d="M5 26 Q11 20 17 26" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Personne droite -->
+  <circle cx="29" cy="14" r="4" fill="white" opacity="0.95"/>
+  <path d="M23 26 Q29 20 35 26" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Lien entre les deux -->
+  <line x1="17" y1="14" x2="23" y2="14" stroke="white" stroke-width="2" stroke-dasharray="2,2" opacity="0.7"/>
+  <circle cx="20" cy="14" r="1.5" fill="#14B8A6"/>
+</svg>

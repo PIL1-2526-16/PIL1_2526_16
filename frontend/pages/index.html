@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MentorLink — Accueil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar-mentor">
+    <a class="navbar-brand" href="index.html">Mentor<span>Link</span></a>
+    <div class="nav-links">
+      <a href="index.html">Accueil</a>
+      <a href="matching.html">Matching</a>
+      <a href="login.html" class="btn-outline-mentor" style="color:#1E3A8A; border-color:#1E3A8A; font-weight:600;">Connexion</a>
+      <a href="register.html" class="btn-primary-mentor">S'inscrire</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-gradient">
+    <div class="container position-relative" style="z-index:1;">
+      <p class="mb-2" style="font-size:0.85rem; opacity:0.8; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;">Plateforme de mentorat IFRI</p>
+      <h1 style="font-size:2.8rem; font-weight:700; margin-bottom:1rem; line-height:1.2;">
+        Trouve ton mentor idéal<br/>à l'IFRI
+      </h1>
+      <p style="font-size:1.1rem; opacity:0.9; max-width:520px; margin:0 auto 2rem;">
+        Connecte-toi avec des étudiants de ta filière pour du soutien académique et professionnel personnalisé.
+      </p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="register.html" class="btn-primary-mentor" style="background:white; color:var(--primary); font-size:1rem; padding:0.75rem 2rem;">
+          Commencer gratuitement
+        </a>
+        <a href="matching.html" class="btn-outline-mentor" style="border-color:white; color:white; font-size:1rem; padding:0.75rem 2rem; background:rgba(255,255,255,0.15);">
+          Voir les mentors
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="py-4" style="background:white; border-bottom:1px solid var(--gray-200);">
+    <div class="container">
+      <div class="row text-center g-4">
+        <div class="col-4">
+          <div style="font-size:2rem; font-weight:700; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">150+</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">Étudiants inscrits</div>
+        </div>
+        <div class="col-4">
+          <div style="font-size:2rem; font-weight:700; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">5</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">Filières couvertes</div>
+        </div>
+        <div class="col-4">
+          <div style="font-size:2rem; font-weight:700; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">95%</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">Taux de satisfaction</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENT CA MARCHE -->
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Comment ça marche ?</h2>
+        <p class="section-subtitle">Trois étapes simples pour trouver ton mentor</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card-mentor text-center">
+            <div style="width:56px; height:56px; border-radius:50%; background:var(--gradient-soft); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+              <i class="bi bi-person-plus" style="font-size:1.5rem; color:var(--primary);"></i>
+            </div>
+            <h5 style="font-weight:700; margin-bottom:0.5rem;">1. Crée ton profil</h5>
+            <p style="font-size:0.88rem; color:var(--gray-400);">Indique tes compétences, tes lacunes et tes disponibilités horaires.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-mentor text-center">
+            <div style="width:56px; height:56px; border-radius:50%; background:var(--gradient-soft); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+              <i class="bi bi-magic" style="font-size:1.5rem; color:var(--primary);"></i>
+            </div>
+            <h5 style="font-weight:700; margin-bottom:0.5rem;">2. Laisse l'algo travailler</h5>
+            <p style="font-size:0.88rem; color:var(--gray-400);">Notre algorithme analyse les profils et te propose les meilleures compatibilités.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-mentor text-center">
+            <div style="width:56px; height:56px; border-radius:50%; background:var(--gradient-soft); display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+              <i class="bi bi-chat-dots" style="font-size:1.5rem; color:var(--primary);"></i>
+            </div>
+            <h5 style="font-weight:700; margin-bottom:0.5rem;">3. Commence le mentorat</h5>
+            <p style="font-size:0.88rem; color:var(--gray-400);">Contacte ton mentor/mentoré via la messagerie intégrée et planifie vos sessions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENTORS EN VEDETTE -->
+  <section class="py-5" style="background:var(--gradient-soft);">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2 class="section-title">Mentors disponibles</h2>
+        <p class="section-subtitle">Des étudiants prêts à t'aider</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card-mentor">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-mentor">AK</div>
+              <div>
+                <div style="font-weight:600;">Amina Koudjo</div>
+                <div style="font-size:0.82rem; color:var(--gray-400);">Intelligence Artificielle · L2</div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span class="badge-mentor badge-blue">Python</span>
+              <span class="badge-mentor badge-blue">Machine Learning</span>
+              <span class="badge-mentor badge-blue">SQL</span>
+            </div>
+            <div style="font-size:0.82rem; color:var(--gray-400); margin-bottom:1rem;"><i class="bi bi-clock me-1"></i>Disponible Lun, Mer, Ven</div>
+            <a href="matching.html" class="btn-primary-mentor w-100 text-center">Contacter</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-mentor">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-mentor" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">RD</div>
+              <div>
+                <div style="font-weight:600;">Rodolphe Djèvi</div>
+                <div style="font-size:0.82rem; color:var(--gray-400);">Génie Logiciel · L2</div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span class="badge-mentor badge-blue">Algorithmique</span>
+              <span class="badge-mentor badge-blue">Java</span>
+              <span class="badge-mentor badge-blue">Git</span>
+            </div>
+            <div style="font-size:0.82rem; color:var(--gray-400); margin-bottom:1rem;"><i class="bi bi-clock me-1"></i>Disponible Mar, Jeu</div>
+            <a href="matching.html" class="btn-primary-mentor w-100 text-center">Contacter</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-mentor">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-mentor" style="background:linear-gradient(135deg,#0891b2,#06b6d4);">FG</div>
+              <div>
+                <div style="font-weight:600;">Fatou Gbèdji</div>
+                <div style="font-size:0.82rem; color:var(--gray-400);">Systèmes & IoT · L2</div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span class="badge-mentor badge-blue">Réseaux</span>
+              <span class="badge-mentor badge-blue">Linux</span>
+              <span class="badge-mentor badge-blue">C</span>
+            </div>
+            <div style="font-size:0.82rem; color:var(--gray-400); margin-bottom:1rem;"><i class="bi bi-clock me-1"></i>Disponible Lun, Jeu, Sam</div>
+            <a href="matching.html" class="btn-primary-mentor w-100 text-center">Contacter</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-5">
+    <div class="container">
+      <div class="gradient-card text-center py-5">
+        <h2 style="font-size:2rem; font-weight:700; margin-bottom:1rem;">Prêt à rejoindre MentorLink ?</h2>
+        <p style="opacity:0.9; margin-bottom:2rem;">Crée ton compte gratuitement et trouve ton mentor en quelques minutes.</p>
+        <a href="register.html" class="btn-primary-mentor" style="background:white; color:var(--primary); font-size:1rem; padding:0.75rem 2.5rem;">
+          Créer mon compte
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background:var(--gray-800); color:var(--gray-400); text-align:center; padding:1.5rem; font-size:0.85rem;">
+    © 2026 MentorLink — IFRI, Université d'Abomey-Calavi
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
