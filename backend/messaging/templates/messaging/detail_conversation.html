@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Conversation avec {{ other_user.prenom }}{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+
+    <!-- En-tête -->
+    <div class="chat-header">
+        <a href="{% url 'messaging:liste_conversations' %}" class="back-btn">← Retour</a>
+        {% if other_user.photo_profil %}
+            <img src="{{ other_user.photo_profil.url }}" alt="Photo" class="avatar-sm">
+        {% else %}
+            <div class="avatar-sm avatar-placeholder">{{ other_user.prenom|first|upper }}</div>
+        {% endif %}
+        <span class="chat-username">{{ other_user.prenom }} {{ other_user.nom }}</span>
+    </div>
+
+    <!-- Zone des messages -->
+    <div class="chat-messages" id="chat-messages">
+        {% for message in messages_list %}
+            <div class="message-bubble {% if message.id_expediteur == request.user %}mine{% else %}theirs{% endif %}"
+                 data-id="{{ message.id_message }}">
+                <p>{{ message.contenu }}</p>
+                <span class="message-time">{{ message.date_envoi|date:"H:i" }}</span>
+                {% if message.id_expediteur == request.user and message.lu %}
+                    <span class="read-indicator">✓✓</span>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="empty-state">Commencez la conversation !</p>
+        {% endfor %}
+    </div>
+
+    <!-- Formulaire d'envoi -->
+    <form method="post" class="chat-form" id="message-form">
+        {% csrf_token %}
+        {{ form.contenu }}
+        <button type="submit" class="send-btn">Envoyer</button>
+    </form>
+
+</div>
+
+<script>
+    // --- Scroll automatique vers le bas ---
+    const chatBox = document.getElementById('chat-messages');
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    scrollToBottom();
+
+    // --- Polling : vérifie les nouveaux messages toutes les 3 secondes ---
+    // On repère le dernier id_message affiché
+    function getLastMessageId() {
+        const bubbles = chatBox.querySelectorAll('.message-bubble[data-id]');
+        if (bubbles.length === 0) return 0;
+        return Math.max(...[...bubbles].map(b => parseInt(b.dataset.id)));
+    }
+
+    function fetchNewMessages() {
+        const lastId = getLastMessageId();
+        const url = "{% url 'messaging:nouveaux_messages' conversation.id_conversation %}?last_id=" + lastId;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.messages && data.messages.length > 0) {
+                    data.messages.forEach(msg => {
+                        const div = document.createElement('div');
+                        div.className = 'message-bubble ' + (msg.is_mine ? 'mine' : 'theirs');
+                        div.dataset.id = msg.id_message;
+                        div.innerHTML = `<p>${msg.contenu}</p><span class="message-time">${msg.date_envoi}</span>`;
+                        chatBox.appendChild(div);
+                    });
+                    scrollToBottom();
+                }
+            })
+            .catch(err => console.error('Erreur polling:', err));
+    }
+
+    // Lance le polling toutes les 3 secondes
+    setInterval(fetchNewMessages, 3000);
+</script>
+{% endblock %}

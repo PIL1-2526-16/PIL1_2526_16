@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Mes conversations{% endblock %}
+
+{% block content %}
+<div class="conversations-container">
+    <h2>Mes conversations</h2>
+
+    {% if conversations_data %}
+        <ul class="conversation-list">
+        {% for item in conversations_data %}
+            <li class="conversation-item {% if item.unread_count > 0 %}has-unread{% endif %}">
+                <a href="{% url 'messaging:detail_conversation' item.conversation.id_conversation %}">
+
+                    <!-- Photo de profil -->
+                    {% if item.other_user.photo_profil %}
+                        <img src="{{ item.other_user.photo_profil.url }}" alt="Photo" class="avatar">
+                    {% else %}
+                        <div class="avatar avatar-placeholder">
+                            {{ item.other_user.prenom|first|upper }}
+                        </div>
+                    {% endif %}
+
+                    <div class="conversation-info">
+                        <span class="participant-name">
+                            {{ item.other_user.prenom }} {{ item.other_user.nom }}
+                        </span>
+
+                        {% if item.last_message %}
+                            <span class="last-message-preview">
+                                {% if item.last_message.id_expediteur == request.user %}
+                                    Vous : 
+                                {% endif %}
+                                {{ item.last_message.contenu|truncatechars:50 }}
+                            </span>
+                            <span class="last-message-time">
+                                {{ item.last_message.date_envoi|date:"d/m à H:i" }}
+                            </span>
+                        {% else %}
+                            <span class="last-message-preview">Nouvelle conversation</span>
+                        {% endif %}
+                    </div>
+
+                    {% if item.unread_count > 0 %}
+                        <span class="unread-badge">{{ item.unread_count }}</span>
+                    {% endif %}
+
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty-state">Vous n'avez pas encore de conversations.</p>
+    {% endif %}
+</div>
+{% endblock %}
