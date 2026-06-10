@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import OffreMentorat, Matching
 
-# Register your models here.
+admin.site.register(OffreMentorat)
+admin.site.register(Matching)

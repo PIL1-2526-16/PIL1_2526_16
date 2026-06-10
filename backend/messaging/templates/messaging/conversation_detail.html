@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}{{ autre.prenom }} {{ autre.nom }} — MentorLink{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+
+  <div class="contacts-sidebar hidden-mobile">
+    <div class="contacts-search">
+      <h5 class="fw-bold mb-0">Conversations</h5>
+    </div>
+    <div class="contacts-list">
+      <a href="{% url 'messaging:conversations' %}" class="chat-contact">
+        <i class="bi bi-arrow-left"></i>&nbsp; Retour aux conversations
+      </a>
+    </div>
+  </div>
+
+  <div class="chat-main">
+    <div class="chat-header">
+      <button class="back-btn" onclick="window.location.href='{% url 'messaging:conversations' %}'"><i class="bi bi-arrow-left"></i></button>
+      <div class="avatar-mentor">{{ autre.prenom|slice:":1" }}{{ autre.nom|slice:":1" }}</div>
+      <div>
+        <div class="fw-bold">{{ autre.prenom }} {{ autre.nom }}</div>
+        <div class="text-muted" style="font-size:0.78rem;">{{ autre.filiere }} · {{ autre.niveau }}</div>
+      </div>
+      <button class="btn-outline-mentor ms-auto" style="padding:0.4rem 0.9rem; font-size:0.82rem; white-space:nowrap;" onclick="openModal()">
+        <i class="bi bi-calendar-check me-1"></i><span class="d-none d-md-inline">Planifier</span><span class="d-md-none">Plan.</span>
+      </button>
+    </div>
+
+    <div class="messages-area" id="messagesArea">
+      {% for message in messages_chat %}
+        {% if message.expediteur_id == request.user.id %}
+          <div class="chat-bubble-me">
+        {% else %}
+          <div class="chat-bubble-other">
+        {% endif %}
+            {% if message.contenu %}<div>{{ message.contenu }}</div>{% endif %}
+            {% if message.fichier %}
+              {% if message.est_image %}
+                <a href="{{ message.fichier.url }}" target="_blank"><img src="{{ message.fichier.url }}" alt="{{ message.nom_fichier }}" style="max-width:200px; border-radius:8px; margin-top:4px;"></a>
+              {% else %}
+                <a href="{{ message.fichier.url }}" target="_blank" class="d-flex align-items-center gap-1 mt-1"><i class="bi bi-paperclip"></i> {{ message.nom_fichier }}</a>
+              {% endif %}
+            {% endif %}
+          </div>
+        <div class="time-label">{{ message.date_envoi|date:"d/m/Y H:i" }}</div>
+      {% empty %}
+        <div class="empty-chat">Aucun message. Lance la conversation !</div>
+      {% endfor %}
+    </div>
+
+    <form method="post" class="message-input-area" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label class="btn-outline-mentor mb-0" style="cursor:pointer;" title="Joindre un fichier">
+        <i class="bi bi-paperclip"></i>
+        <input type="file" name="fichier" style="display:none;" onchange="this.form.querySelector('.file-name').textContent = this.files[0] ? this.files[0].name : '';">
+      </label>
+      <span class="file-name text-muted" style="font-size:0.75rem;"></span>
+      <input type="text" name="contenu" class="form-control-mentor" placeholder="Écris ton message..." autocomplete="off">
+      <button type="submit" class="btn-primary-mentor"><i class="bi bi-send"></i></button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL PLANIFIER -->
+<div class="modal-overlay" id="planModal" style="display:none;" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 style="margin:0; font-weight:700;"><i class="bi bi-calendar-check me-2" style="color:var(--primary);"></i>Planifier une session</h6>
+      <button type="button" onclick="closeModal()" style="background:none; border:none; font-size:1.2rem; color:var(--gray-400); cursor:pointer;">&times;</button>
+    </div>
+    <p style="font-size:0.85rem; color:var(--gray-400); margin-bottom:1.25rem;">Avec {{ autre.prenom }} {{ autre.nom }}</p>
+    <div class="mb-3">
+      <label class="form-label-mentor">Date</label>
+      <input type="date" class="form-control-mentor" id="sessionDate" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label-mentor">Heure</label>
+      <input type="time" class="form-control-mentor" id="sessionTime" />
+    </div>
+    <div class="mb-4">
+      <label class="form-label-mentor">Mode</label>
+      <select class="form-control-mentor">
+        <option>En ligne (Google Meet)</option>
+        <option>Présentiel</option>
+      </select>
+    </div>
+    <div id="confirmMsg" style="display:none; background:var(--gradient-soft); border-radius:var(--radius-sm); padding:0.75rem 1rem; font-size:0.85rem; color:var(--primary); font-weight:500; margin-bottom:1rem;">
+      <i class="bi bi-check-circle me-2"></i>Session planifiée avec succès !
+    </div>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn-outline-mentor" style="flex:1;" onclick="closeModal()">Annuler</button>
+      <button type="button" class="btn-primary-mentor" style="flex:1;" onclick="confirmSession()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const area = document.getElementById('messagesArea');
+  if (area) area.scrollTop = area.scrollHeight;
+
+  function openModal() {
+    document.getElementById('planModal').style.display = 'flex';
+    document.getElementById('confirmMsg').style.display = 'none';
+  }
+  function closeModal() {
+    document.getElementById('planModal').style.display = 'none';
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('planModal')) closeModal();
+  }
+  function confirmSession() {
+    document.getElementById('confirmMsg').style.display = 'block';
+    setTimeout(() => closeModal(), 1800);
+  }
+</script>
+{% endblock %}

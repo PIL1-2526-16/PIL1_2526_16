@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MentorLink — Matching</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="../css/style.css" rel="stylesheet"/>
+  <style>
+    .filter-bar { background:white; border-bottom:1px solid var(--gray-200); padding:0.75rem 0; position:sticky; top:64px; z-index:50; }
+    .filter-chip { display:inline-flex; align-items:center; gap:6px; padding:0.4rem 1rem; border-radius:50px; border:1.5px solid var(--gray-200); font-size:0.82rem; font-weight:500; color:var(--gray-600); cursor:pointer; transition:all 0.2s; background:white; white-space:nowrap; }
+    .filter-chip.active, .filter-chip:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-light); }
+    .match-result-card { background:white; border-radius:var(--radius); border:1px solid var(--gray-200); padding:1.25rem; margin-bottom:1rem; transition:all 0.2s; }
+    .match-result-card:hover { box-shadow:var(--shadow-md); border-color:var(--primary); transform:translateY(-1px); }
+    .match-result-card.hidden { display:none; }
+    .score-bar { height:5px; border-radius:3px; background:var(--gray-100); overflow:hidden; }
+    .score-fill { height:100%; border-radius:3px; background:var(--gradient); }
+    .avatar-sm { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; color:white; flex-shrink:0; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:999; display:flex; align-items:center; justify-content:center; padding:1rem; }
+    .modal-box { background:white; border-radius:var(--radius-lg); padding:2rem; width:100%; max-width:480px; box-shadow:var(--shadow-lg); max-height:90vh; overflow-y:auto; }
+    .tag-offer { display:inline-flex; align-items:center; gap:4px; padding:0.3rem 0.75rem; border-radius:50px; font-size:0.8rem; font-weight:500; cursor:pointer; border:1.5px solid var(--gray-200); color:var(--gray-600); transition:all 0.2s; margin:3px; }
+    .tag-offer.selected { background:var(--primary-light); border-color:var(--primary); color:var(--primary); }
+    .common-dispo { display:inline-flex; align-items:center; gap:4px; padding:0.2rem 0.6rem; border-radius:50px; background:var(--accent-soft); color:var(--accent-dark); font-size:0.75rem; font-weight:500; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar-mentor">
+  <a class="navbar-brand" href="dashboard.html">
+    <img src="../assets/logo.svg" alt="logo" width="28" height="28"/>
+    Mentor<span>Link</span>
+  </a>
+  <div class="nav-links">
+    <a href="dashboard.html"><i class="bi bi-grid me-1"></i>Tableau de bord</a>
+    <a href="matching.html" style="color:var(--primary); font-weight:600;"><i class="bi bi-people me-1"></i>Matching</a>
+    <a href="chat.html"><i class="bi bi-chat me-1"></i>Messages</a>
+    <a href="profil.html"><i class="bi bi-person me-1"></i>Profil</a>
+    <button class="nav-logout" onclick="logout()"><i class="bi bi-box-arrow-right"></i>Déconnexion</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="background:var(--gradient-soft); padding:1.75rem 0; border-bottom:1px solid var(--gray-200);">
+  <div class="container">
+    <div class="row align-items-center g-3">
+      <div class="col-md-6">
+        <h2 class="section-title">Trouve ton mentor idéal</h2>
+        <p class="section-subtitle" style="margin-bottom:0;">Basé sur tes compétences, ta filière et tes disponibilités</p>
+      </div>
+      <div class="col-md-6">
+        <div style="position:relative;">
+          <i class="bi bi-search" style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--gray-400);"></i>
+          <input type="text" class="form-control-mentor" id="searchInput" placeholder="Rechercher une matière, une compétence..." style="padding-left:2.5rem;" oninput="filterCards()"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTRES -->
+<div class="filter-bar">
+  <div class="container">
+    <div class="d-flex gap-2" style="overflow-x:auto; padding-bottom:2px;">
+      <button class="filter-chip active" onclick="setFilter(this,'all')"><i class="bi bi-grid"></i>Tous</button>
+      <button class="filter-chip" onclick="setFilter(this,'mentor')"><i class="bi bi-mortarboard"></i>Mentors</button>
+      <button class="filter-chip" onclick="setFilter(this,'mentore')"><i class="bi bi-person-raised-hand"></i>Mentorés</button>
+      <button class="filter-chip" onclick="setFilter(this,'online')"><i class="bi bi-laptop"></i>En ligne</button>
+      <button class="filter-chip" onclick="setFilter(this,'presentiel')"><i class="bi bi-building"></i>Présentiel</button>
+      <button class="filter-chip ms-auto" onclick="sortByScore()" style="flex-shrink:0;"><i class="bi bi-sort-down"></i>Meilleur score</button>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- RÉSULTATS -->
+    <div class="col-md-8">
+      <p style="font-size:0.85rem; color:var(--gray-400); margin-bottom:1rem;" id="resultCount">
+        <strong style="color:var(--gray-800);">4 résultats</strong> correspondant à ton profil
+      </p>
+
+      <div id="cardsList">
+
+        <!-- CARD 1 -->
+        <div class="match-result-card" data-type="mentor" data-mode="online" data-score="92" data-skills="python sql machine learning" onclick="window.location.href='chat.html'">
+          <div class="d-flex gap-3">
+            <div class="avatar-sm" style="background:var(--gradient);">AK</div>
+            <div style="flex:1; min-width:0;">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-1">
+                <div>
+                  <div style="font-weight:700; font-size:1rem;">Amina Koudjo</div>
+                  <div style="font-size:0.82rem; color:var(--gray-400);">Intelligence Artificielle · L2 · <span class="badge-mentor badge-blue" style="font-size:0.75rem;">Mentor</span></div>
+                </div>
+                <div class="score-circle" style="flex-shrink:0;">92%</div>
+              </div>
+              <!-- Compétences en commun -->
+              <div style="font-size:0.75rem; color:var(--gray-400); margin:0.5rem 0 0.25rem; font-weight:600;">Compétences en commun</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="badge-mentor badge-blue">Python</span>
+                <span class="badge-mentor badge-blue">SQL</span>
+                <span class="badge-mentor badge-blue">Machine Learning</span>
+              </div>
+              <!-- Disponibilités communes -->
+              <div style="font-size:0.75rem; color:var(--gray-400); margin-bottom:0.25rem; font-weight:600;">Disponibilités communes</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="common-dispo"><i class="bi bi-clock me-1"></i>Mer 10h</span>
+                <span class="common-dispo"><i class="bi bi-clock me-1"></i>Ven 14h</span>
+                <span class="common-dispo"><i class="bi bi-laptop me-1"></i>En ligne</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width:92%;"></div></div>
+              <div class="d-flex justify-content-end mt-2">
+                <span style="font-size:0.82rem; color:var(--accent-dark); font-weight:600;">Contacter <i class="bi bi-arrow-right"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="match-result-card" data-type="mentor" data-mode="presentiel" data-score="78" data-skills="algorithmique java git" onclick="window.location.href='chat.html'">
+          <div class="d-flex gap-3">
+            <div class="avatar-sm" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">RD</div>
+            <div style="flex:1; min-width:0;">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-1">
+                <div>
+                  <div style="font-weight:700; font-size:1rem;">Rodolphe Djèvi</div>
+                  <div style="font-size:0.82rem; color:var(--gray-400);">Génie Logiciel · L2 · <span class="badge-mentor badge-blue" style="font-size:0.75rem;">Mentor</span></div>
+                </div>
+                <div class="score-circle" style="flex-shrink:0;">78%</div>
+              </div>
+              <div style="font-size:0.75rem; color:var(--gray-400); margin:0.5rem 0 0.25rem; font-weight:600;">Compétences en commun</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="badge-mentor badge-blue">Algorithmique</span>
+                <span class="badge-mentor badge-blue">Java</span>
+                <span class="badge-mentor badge-blue">Git</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--gray-400); margin-bottom:0.25rem; font-weight:600;">Disponibilités communes</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="common-dispo"><i class="bi bi-clock me-1"></i>Lun 14h</span>
+                <span class="common-dispo"><i class="bi bi-building me-1"></i>Présentiel</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width:78%;"></div></div>
+              <div class="d-flex justify-content-end mt-2">
+                <span style="font-size:0.82rem; color:var(--accent-dark); font-weight:600;">Contacter <i class="bi bi-arrow-right"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="match-result-card" data-type="mentore" data-mode="online" data-score="71" data-skills="réseaux linux c" onclick="window.location.href='chat.html'">
+          <div class="d-flex gap-3">
+            <div class="avatar-sm" style="background:linear-gradient(135deg,#0891b2,#06b6d4);">FG</div>
+            <div style="flex:1; min-width:0;">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-1">
+                <div>
+                  <div style="font-weight:700; font-size:1rem;">Fatou Gbèdji</div>
+                  <div style="font-size:0.82rem; color:var(--gray-400);">Systèmes Embarqués · L2 · <span class="badge-mentor" style="background:#fef3c7; color:#92400e; font-size:0.75rem;">Mentoré</span></div>
+                </div>
+                <div class="score-circle" style="flex-shrink:0;">71%</div>
+              </div>
+              <div style="font-size:0.75rem; color:var(--gray-400); margin:0.5rem 0 0.25rem; font-weight:600;">Compétences en commun</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="badge-mentor badge-blue">Réseaux</span>
+                <span class="badge-mentor badge-blue">Linux</span>
+                <span class="badge-mentor badge-blue">C</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--gray-400); margin-bottom:0.25rem; font-weight:600;">Disponibilités communes</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="common-dispo"><i class="bi bi-clock me-1"></i>Jeu, Sam</span>
+                <span class="common-dispo"><i class="bi bi-laptop me-1"></i>En ligne</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width:71%;"></div></div>
+              <div class="d-flex justify-content-end mt-2">
+                <span style="font-size:0.82rem; color:var(--accent-dark); font-weight:600;">Contacter <i class="bi bi-arrow-right"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="match-result-card" data-type="mentor" data-mode="presentiel" data-score="65" data-skills="bases de données uml merise" onclick="window.location.href='chat.html'">
+          <div class="d-flex gap-3">
+            <div class="avatar-sm" style="background:linear-gradient(135deg,#059669,#34d399);">MS</div>
+            <div style="flex:1; min-width:0;">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-1">
+                <div>
+                  <div style="font-weight:700; font-size:1rem;">Mohamed Sènou</div>
+                  <div style="font-size:0.82rem; color:var(--gray-400);">Systèmes d'Information · L3 · <span class="badge-mentor badge-blue" style="font-size:0.75rem;">Mentor</span></div>
+                </div>
+                <div class="score-circle" style="flex-shrink:0;">65%</div>
+              </div>
+              <div style="font-size:0.75rem; color:var(--gray-400); margin:0.5rem 0 0.25rem; font-weight:600;">Compétences en commun</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="badge-mentor badge-blue">Bases de données</span>
+                <span class="badge-mentor badge-blue">UML</span>
+                <span class="badge-mentor badge-blue">Merise</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--gray-400); margin-bottom:0.25rem; font-weight:600;">Disponibilités communes</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="common-dispo"><i class="bi bi-clock me-1"></i>Mar matin</span>
+                <span class="common-dispo"><i class="bi bi-building me-1"></i>Présentiel</span>
+              </div>
+              <div class="score-bar"><div class="score-fill" style="width:65%;"></div></div>
+              <div class="d-flex justify-content-end mt-2">
+                <span style="font-size:0.82rem; color:var(--accent-dark); font-weight:600;">Contacter <i class="bi bi-arrow-right"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="emptyState" style="display:none; text-align:center; padding:3rem 1rem; color:var(--gray-400);">
+        <i class="bi bi-search" style="font-size:2.5rem; display:block; margin-bottom:0.75rem;"></i>
+        <p style="font-weight:600; color:var(--gray-600);">Aucun résultat trouvé</p>
+        <p style="font-size:0.85rem;">Essaie d'autres filtres ou une autre recherche.</p>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="col-md-4">
+      <div class="card-mentor mb-4" style="cursor:default;">
+        <h6 style="font-weight:700; margin-bottom:0.75rem;">Mon offre de mentorat</h6>
+        <div class="d-flex flex-wrap gap-1 mb-3">
+          <span class="badge-mentor badge-blue">Python</span>
+          <span class="badge-mentor badge-teal">Web</span>
+          <span class="badge-mentor badge-blue">Algo</span>
+        </div>
+        <button class="btn-primary-mentor w-100 text-center mb-2" onclick="openOfferModal('offre')">
+          <i class="bi bi-plus-circle me-1"></i>Publier une offre
+        </button>
+        <button class="btn-accent-mentor w-100 text-center" onclick="openOfferModal('demande')">
+          <i class="bi bi-search me-1"></i>Publier une demande
+        </button>
+      </div>
+
+      <div class="card-mentor" style="cursor:default;">
+        <h6 style="font-weight:700; margin-bottom:1rem;">Filtrer par matière</h6>
+        <div class="d-flex flex-wrap gap-1">
+          <span class="filter-chip" style="font-size:0.78rem; padding:0.3rem 0.8rem;" onclick="filterBySkill(this,'python')">Python</span>
+          <span class="filter-chip" style="font-size:0.78rem; padding:0.3rem 0.8rem;" onclick="filterBySkill(this,'sql')">SQL</span>
+          <span class="filter-chip" style="font-size:0.78rem; padding:0.3rem 0.8rem;" onclick="filterBySkill(this,'algorithmique')">Algo</span>
+          <span class="filter-chip" style="font-size:0.78rem; padding:0.3rem 0.8rem;" onclick="filterBySkill(this,'réseaux')">Réseaux</span>
+          <span class="filter-chip" style="font-size:0.78rem; padding:0.3rem 0.8rem;" onclick="filterBySkill(this,'java')">Java</span>
+          <span class="filter-chip" style="font-size:0.78rem; padding:0.3rem 0.8rem;" onclick="filterBySkill(this,'machine learning')">ML</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL OFFRE / DEMANDE -->
+<div class="modal-overlay" id="offerModal" style="display:none;" onclick="closeOfferOutside(event)">
+  <div class="modal-box">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <h6 style="font-weight:700; margin:0;" id="offerModalTitle">Publier une offre de mentorat</h6>
+      <button onclick="closeOfferModal()" style="background:none; border:none; font-size:1.2rem; color:var(--gray-400); cursor:pointer;">&times;</button>
+    </div>
+    <p style="font-size:0.82rem; color:var(--gray-400); margin-bottom:1.25rem;" id="offerModalSubtitle"></p>
+
+    <div class="mb-3">
+      <label class="form-label-mentor">Titre</label>
+      <input type="text" class="form-control-mentor" placeholder="Ex: Aide en Python et algorithmique" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label-mentor">Description</label>
+      <textarea class="form-control-mentor" rows="3" placeholder="Décris ce que tu proposes ou ce dont tu as besoin..."></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label-mentor">Compétences concernées</label>
+      <div class="d-flex flex-wrap">
+        <span class="tag-offer selected" onclick="this.classList.toggle('selected')">Python</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')">Algorithmique</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')">SQL</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')">Java</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')">HTML / CSS</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')">Réseaux</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')">Machine Learning</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')">Cybersécurité</span>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label class="form-label-mentor">Mode de session</label>
+      <div class="d-flex gap-2 flex-wrap">
+        <span class="tag-offer selected" onclick="this.classList.toggle('selected')"><i class="bi bi-laptop me-1"></i>En ligne</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')"><i class="bi bi-building me-1"></i>Présentiel</span>
+        <span class="tag-offer" onclick="this.classList.toggle('selected')"><i class="bi bi-arrows-angle-expand me-1"></i>Les deux</span>
+      </div>
+    </div>
+
+    <div id="offerConfirm" style="display:none; background:var(--accent-soft); border-radius:var(--radius-sm); padding:0.75rem 1rem; font-size:0.85rem; color:var(--accent-dark); font-weight:500; margin-bottom:1rem;">
+      <i class="bi bi-check-circle me-2"></i>Publié avec succès !
+    </div>
+
+    <div class="d-flex gap-2">
+      <button class="btn-outline-mentor" style="flex:1;" onclick="closeOfferModal()">Annuler</button>
+      <button class="btn-primary-mentor" style="flex:1;" onclick="submitOffer()">Publier</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/matching.js"></script>
+</body>
+</html>

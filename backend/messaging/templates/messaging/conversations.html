@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Messages — MentorLink{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+  <div class="contacts-sidebar" style="width:100%;">
+    <div class="contacts-search">
+      <h5 class="fw-bold mb-2">Conversations</h5>
+      <div style="position:relative;">
+        <i class="bi bi-search" style="position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); color:var(--gray-400); font-size:0.85rem;"></i>
+        <input type="text" id="searchContacts" class="form-control-mentor" placeholder="Rechercher..." style="padding-left:2.2rem; font-size:0.85rem;" onkeyup="filterContacts()" />
+      </div>
+    </div>
+    <div class="contacts-list" id="contactsList">
+      {% for item in conversations %}
+        <a href="{% url 'messaging:conversation_detail' item.conversation.id %}" class="chat-contact" data-name="{{ item.autre.prenom|lower }} {{ item.autre.nom|lower }}">
+          <div style="position:relative;">
+            <div class="avatar-mentor">{{ item.autre.prenom|slice:":1" }}{{ item.autre.nom|slice:":1" }}</div>
+          </div>
+          <div class="flex-grow-1" style="min-width:0;">
+            <div class="d-flex justify-content-between">
+              <span class="contact-name fw-semibold">{{ item.autre.prenom }} {{ item.autre.nom }}</span>
+              {% if item.dernier_message %}
+                <span class="text-muted" style="font-size:0.72rem;">{{ item.dernier_message.date_envoi|date:"H:i" }}</span>
+              {% endif %}
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="contact-preview">
+                {% if item.dernier_message %}
+                  {% if item.dernier_message.contenu %}{{ item.dernier_message.contenu }}{% else %}<i class="bi bi-paperclip"></i> Pièce jointe{% endif %}
+                {% else %}Aucun message{% endif %}
+              </span>
+              {% if item.non_lus %}
+                <span class="unread-badge">{{ item.non_lus }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% empty %}
+        <div class="empty-chat">
+          <div>
+            <i class="bi bi-chat-square-dots" style="font-size:2rem;"></i>
+            <p class="mt-2">Aucune conversation. Rends-toi sur la page <a href="{% url 'matching:liste' %}">Matching</a> pour échanger avec d'autres étudiants.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function filterContacts() {
+    const query = document.getElementById('searchContacts').value.toLowerCase();
+    document.querySelectorAll('#contactsList .chat-contact[data-name]').forEach(contact => {
+      contact.style.display = contact.dataset.name.includes(query) ? '' : 'none';
+    });
+  }
+</script>
+{% endblock %}

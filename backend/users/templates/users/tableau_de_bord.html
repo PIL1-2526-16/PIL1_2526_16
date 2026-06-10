@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord — MentorLink{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- BANNIERE -->
+  <div class="gradient-card mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+      <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:0.25rem;">Bonjour, {{ utilisateur.prenom }} 👋</h2>
+      <p style="opacity:0.85; font-size:0.88rem; margin:0;">{{ utilisateur.filiere }} · {{ utilisateur.niveau }} · IFRI</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'matching:liste' %}" class="btn-accent-mentor"><i class="bi bi-people me-2"></i>Trouver un mentor</a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <div class="fw-bold" style="font-size:1.3rem;">{{ nb_matchings }}</div>
+          <div class="text-muted" style="font-size:0.78rem;">Matchings</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon teal"><i class="bi bi-megaphone-fill"></i></div>
+        <div>
+          <div class="fw-bold" style="font-size:1.3rem;">{{ nb_offres }}</div>
+          <div class="text-muted" style="font-size:0.78rem;">Offres publiées</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-chat-dots-fill"></i></div>
+        <div>
+          <div class="fw-bold" style="font-size:1.3rem;">{{ messages_non_lus }}</div>
+          <div class="text-muted" style="font-size:0.78rem;">Messages non lus</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="bi bi-mortarboard-fill"></i></div>
+        <div>
+          <div class="fw-bold" style="font-size:1.3rem;">{{ nb_competences }}</div>
+          <div class="text-muted" style="font-size:0.78rem;">Compétences renseignées</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if nb_demandes_recues %}
+    <div class="alert-mentor alert-info mb-4">
+      <i class="bi bi-bell"></i> Tu as {{ nb_demandes_recues }} demande{{ nb_demandes_recues|pluralize }} de matching en attente de réponse.
+      <a href="{% url 'matching:liste' %}">Voir les demandes</a>.
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <!-- MEILLEURS MATCHINGS -->
+      <div class="card-mentor mb-4">
+        <h5 class="fw-bold mb-3">Meilleurs matchings</h5>
+        {% for matching in matchings %}
+          <div class="match-mini">
+            <div class="avatar-mentor">{{ matching.autre.prenom|slice:":1" }}{{ matching.autre.nom|slice:":1" }}</div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold" style="font-size:0.9rem;">{{ matching.autre.prenom }} {{ matching.autre.nom }}</div>
+              <div class="progress-thin mt-1"><div class="progress-fill" style="width:{{ matching.score }}%;"></div></div>
+            </div>
+            <span class="badge-mentor badge-blue">{{ matching.score|floatformat:0 }}%</span>
+          </div>
+        {% empty %}
+          <p class="text-muted" style="font-size:0.88rem;">Aucun matching pour le moment. <a href="{% url 'matching:liste' %}">Découvre tes matchs</a>.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <!-- ACCES RAPIDES -->
+      <div class="card-mentor">
+        <h5 class="fw-bold mb-3">Accès rapides</h5>
+        <div class="row g-2">
+          <div class="col-6">
+            <a href="{% url 'matching:liste' %}" class="quick-link">
+              <div class="quick-link-icon" style="background:var(--primary-light); color:var(--primary);"><i class="bi bi-search"></i></div>
+              Matching
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'messaging:conversations' %}" class="quick-link">
+              <div class="quick-link-icon" style="background:var(--accent-soft); color:var(--accent-dark);"><i class="bi bi-chat-dots"></i></div>
+              Messages
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'profil' %}" class="quick-link">
+              <div class="quick-link-icon" style="background:#dcfce7; color:#166534;"><i class="bi bi-person"></i></div>
+              Mon profil
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'modifier_profil' %}" class="quick-link">
+              <div class="quick-link-icon" style="background:#fef3c7; color:#92400e;"><i class="bi bi-pencil"></i></div>
+              Modifier profil
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

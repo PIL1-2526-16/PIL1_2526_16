@@ -1,41 +1,185 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon profil - IFRI MentorLink</title>
-</head>
-<body>
-    <h1>{{ utilisateur.prenom }} {{ utilisateur.nom }}</h1>
+{% extends "base.html" %}
 
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
+{% block title %}Mon profil — MentorLink{% endblock %}
+
+{% block content %}
+
+<div class="profile-header">
+  <div class="avatar-lg mx-auto mb-3">
+    {% if utilisateur.photo_profil %}
+      <img src="{{ utilisateur.photo_profil.url }}" alt="Photo de profil">
+    {% else %}
+      {{ utilisateur.prenom|slice:":1" }}{{ utilisateur.nom|slice:":1" }}
     {% endif %}
+  </div>
+  <h3 class="fw-bold mb-1">{{ utilisateur.prenom }} {{ utilisateur.nom }}</h3>
+  <p style="opacity:0.9;">{{ utilisateur.filiere }} · {{ utilisateur.niveau }}</p>
+  <div class="d-flex justify-content-center gap-2 mt-2">
+    <span class="badge-mentor" style="background:rgba(255,255,255,0.2); color:white;"><i class="bi bi-shield-check me-1"></i>Mentor disponible</span>
+  </div>
+</div>
 
-    <p><strong>Email :</strong> {{ utilisateur.email }}</p>
-    <p><strong>Téléphone :</strong> {{ utilisateur.telephone }}</p>
-    <p><strong>Filière :</strong> {{ utilisateur.filiere }}</p>
-    <p><strong>Niveau :</strong> {{ utilisateur.niveau }}</p>
-    <p><strong>Bio :</strong> {{ utilisateur.bio }}</p>
-    <p><strong>Centres d'intérêt :</strong> {{ utilisateur.centres_interet }}</p>
+<div class="container profile-card-floating pb-5">
+  <div class="row g-4">
 
-    <h2>Disponibilités</h2>
-    {% for dispo in disponibilites %}
-        <p>{{ dispo.jour }} : {{ dispo.heure_debut }} - {{ dispo.heure_fin }}</p>
-    {% empty %}
-        <p>Aucune disponibilité renseignée.</p>
-    {% endfor %}
+    <div class="col-lg-8">
 
-    <h2>Compétences</h2>
-    {% for comp in competences %}
-        <p>{{ comp.competence.nom_competence }} — {{ comp.type_competence }}</p>
-    {% empty %}
-        <p>Aucune compétence renseignée.</p>
-    {% endfor %}
+      <!-- INFORMATIONS -->
+      <div class="card-mentor mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Informations</h5>
+          <div class="d-flex gap-2">
+            <a href="{% url 'changer_mot_de_passe' %}" class="btn-outline-mentor"><i class="bi bi-key"></i> Mot de passe</a>
+            <button type="button" class="btn-outline-mentor" onclick="toggleEdit('infoEdit','infoView',this)">
+              <i class="bi bi-pencil"></i> Modifier
+            </button>
+          </div>
+        </div>
+        <div id="infoView" class="row g-3">
+          <div class="col-md-6">
+            <span class="form-label-mentor">Email</span>
+            <p>{{ utilisateur.email }}</p>
+          </div>
+          <div class="col-md-6">
+            <span class="form-label-mentor">Téléphone</span>
+            <p>{{ utilisateur.telephone }}</p>
+          </div>
+          <div class="col-md-6">
+            <span class="form-label-mentor">Filière</span>
+            <p>{{ utilisateur.filiere }}</p>
+          </div>
+          <div class="col-md-6">
+            <span class="form-label-mentor">Niveau</span>
+            <p>{{ utilisateur.niveau }}</p>
+          </div>
+        </div>
+        <div id="infoEdit" style="display:none;">
+          <form method="post" action="{% url 'modifier_profil' %}">
+            {% csrf_token %}
+            <input type="hidden" name="nom" value="{{ utilisateur.nom }}">
+            <input type="hidden" name="prenom" value="{{ utilisateur.prenom }}">
+            <input type="hidden" name="bio" value="{{ utilisateur.bio }}">
+            <input type="hidden" name="centres_interet" value="{{ utilisateur.centres_interet }}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label-mentor">Téléphone</label>
+                {{ edit_form.telephone }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-mentor">Filière</label>
+                {{ edit_form.filiere }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-mentor">Niveau</label>
+                {{ edit_form.niveau }}
+              </div>
+            </div>
+            <button type="submit" class="btn-primary-mentor mt-3 w-100 text-center">Enregistrer</button>
+          </form>
+        </div>
+      </div>
 
-    <a href="{% url 'modifier_profil' %}">Modifier mon profil</a>
-    <a href="{% url 'deconnexion' %}">Se déconnecter</a>
-</body>
-</html>
+      <!-- BIO -->
+      <div class="card-mentor mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Bio</h5>
+          <button type="button" class="btn-outline-mentor" onclick="toggleEdit('bioEdit','bioView',this)">
+            <i class="bi bi-pencil"></i> Modifier
+          </button>
+        </div>
+        <div id="bioView">
+          <p class="text-muted mb-0">{{ utilisateur.bio|default:"Aucune bio renseignée." }}</p>
+          {% if utilisateur.centres_interet %}
+            <h6 class="fw-bold mt-3">Centres d'intérêt</h6>
+            <p class="text-muted mb-0">{{ utilisateur.centres_interet }}</p>
+          {% endif %}
+        </div>
+        <div id="bioEdit" style="display:none;">
+          <form method="post" action="{% url 'modifier_profil' %}">
+            {% csrf_token %}
+            <input type="hidden" name="nom" value="{{ utilisateur.nom }}">
+            <input type="hidden" name="prenom" value="{{ utilisateur.prenom }}">
+            <input type="hidden" name="telephone" value="{{ utilisateur.telephone }}">
+            <input type="hidden" name="filiere" value="{{ utilisateur.filiere }}">
+            <input type="hidden" name="niveau" value="{{ utilisateur.niveau }}">
+            <label class="form-label-mentor">Bio</label>
+            {{ edit_form.bio }}
+            <label class="form-label-mentor mt-2">Centres d'intérêt</label>
+            {{ edit_form.centres_interet }}
+            <button type="submit" class="btn-primary-mentor mt-3">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- POINTS FORTS / FAIBLES -->
+      <div class="d-flex justify-content-end mb-2">
+        <a href="{% url 'gerer_competences' %}" class="btn-outline-mentor"><i class="bi bi-pencil"></i> Modifier mes compétences et disponibilités</a>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card-mentor h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning"></i> Points forts</h5>
+            {% for comp in competences %}
+              {% if comp.type_competence == 'point_fort' %}
+                <span class="badge-mentor badge-blue">{{ comp.competence.nom_competence }}</span>
+              {% endif %}
+            {% empty %}
+              <p class="text-muted" style="font-size:0.85rem;">Aucun point fort renseigné.</p>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card-mentor h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-arrow-repeat text-info"></i> Points faibles</h5>
+            {% for comp in competences %}
+              {% if comp.type_competence == 'point_faible' %}
+                <span class="badge-mentor" style="background:#fef3c7; color:#92400e;">{{ comp.competence.nom_competence }}</span>
+              {% endif %}
+            {% empty %}
+              <p class="text-muted" style="font-size:0.85rem;">Aucun point faible renseigné.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+      <!-- STATISTIQUES -->
+      <div class="card-mentor mb-4">
+        <h5 class="fw-bold mb-3">Statistiques</h5>
+        <div class="row g-2 text-center">
+          <div class="col-6">
+            <div class="stat-box">
+              <div class="fw-bold" style="font-size:1.4rem; color:var(--primary);">{{ competences|length }}</div>
+              <div class="text-muted" style="font-size:0.78rem;">Compétences</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="stat-box">
+              <div class="fw-bold" style="font-size:1.4rem; color:var(--primary);">{{ disponibilites|length }}</div>
+              <div class="text-muted" style="font-size:0.78rem;">Disponibilités</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISPONIBILITES -->
+      <div class="card-mentor mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-calendar-week"></i> Disponibilités</h5>
+          <a href="{% url 'gerer_competences' %}" class="btn-outline-mentor"><i class="bi bi-pencil"></i></a>
+        </div>
+        {% for dispo in disponibilites %}
+          <span class="availability-slot active"><i class="bi bi-check-circle"></i>{{ dispo.jour }} {{ dispo.heure_debut|time:"H:i" }} - {{ dispo.heure_fin|time:"H:i" }}</span>
+        {% empty %}
+          <p class="text-muted" style="font-size:0.85rem;">Aucune disponibilité renseignée.</p>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

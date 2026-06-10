@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Matching — MentorLink{% endblock %}
+
+{% block content %}
+
+<section class="filter-bar">
+  <div class="container">
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <input type="text" id="searchInput" class="form-control-mentor" placeholder="Rechercher un étudiant..." style="max-width:280px;" onkeyup="filterCards()">
+      <span class="filter-chip active" data-filter="tous" onclick="setFilter('tous')">Tous</span>
+      <span class="filter-chip" data-filter="filiere" onclick="setFilter('filiere')">Même filière</span>
+      <span class="filter-chip" data-filter="niveau" onclick="setFilter('niveau')">Même niveau</span>
+      <span class="filter-chip" data-filter="score" onclick="setFilter('score')">Meilleur score</span>
+    </div>
+  </div>
+</section>
+
+<div class="container py-4">
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="alert-mentor alert-{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <h5 class="fw-bold mb-3">Résultats de matching ({{ resultats|length }})</h5>
+
+      {% for resultat in resultats %}
+      <div class="match-result-card" data-name="{{ resultat.utilisateur.prenom|lower }} {{ resultat.utilisateur.nom|lower }}" data-score="{{ resultat.score|floatformat:0 }}" data-same-filiere="{% if resultat.utilisateur.filiere == request.user.filiere %}1{% else %}0{% endif %}" data-same-niveau="{% if resultat.utilisateur.niveau == request.user.niveau %}1{% else %}0{% endif %}">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+          <div class="d-flex gap-3">
+            <div class="avatar-sm">{{ resultat.utilisateur.prenom|slice:":1" }}{{ resultat.utilisateur.nom|slice:":1" }}</div>
+            <div>
+              <h6 class="fw-bold mb-1">{{ resultat.utilisateur.prenom }} {{ resultat.utilisateur.nom }}</h6>
+              <span class="badge-mentor badge-blue">{{ resultat.utilisateur.filiere }} · {{ resultat.utilisateur.niveau }}</span>
+              <p class="text-muted mt-2 mb-1" style="font-size:0.85rem;">
+                {{ resultat.utilisateur.bio|default:"Aucune bio renseignée."|truncatewords:18 }}
+              </p>
+              {% if resultat.competences_communes %}
+              <div style="font-size:0.75rem; color:var(--gray-400); margin:0.5rem 0 0.25rem; font-weight:600;">Compétences en commun</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                {% for comp in resultat.competences_communes %}
+                  <span class="badge-mentor badge-teal">{{ comp.nom_competence }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              {% if resultat.jours_communs %}
+              <div style="font-size:0.75rem; color:var(--gray-400); margin-bottom:0.25rem; font-weight:600;">Disponibilités communes</div>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                {% for jour in resultat.jours_communs %}
+                  <span class="common-dispo"><i class="bi bi-clock me-1"></i> {{ jour }}</span>
+                {% endfor %}
+                {% if resultat.en_ligne %}
+                  <span class="common-dispo"><i class="bi bi-laptop me-1"></i> En ligne</span>
+                {% endif %}
+                {% if resultat.presentiel %}
+                  <span class="common-dispo"><i class="bi bi-building me-1"></i> Présentiel</span>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="text-center" style="min-width:90px;">
+            <div class="score-circle mx-auto mb-2" style="width:56px; height:56px; font-size:1.1rem;">{{ resultat.score|floatformat:0 }}%</div>
+            <div class="score-bar mb-2"><div class="score-fill" style="width:{{ resultat.score }}%;"></div></div>
+            <div class="d-flex flex-column gap-1">
+              <a href="{% url 'messaging:demarrer_conversation' resultat.utilisateur.id %}" class="btn-outline-mentor" style="font-size:0.78rem; padding:0.4rem 0.8rem;">
+                <i class="bi bi-chat-dots"></i> Message
+              </a>
+              {% with m=resultat.matching %}
+                {% if not m %}
+                  <form method="post" action="{% url 'matching:proposer' resultat.utilisateur.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-primary-mentor w-100" style="font-size:0.78rem; padding:0.4rem 0.8rem;">
+                      Proposer un matching
+                    </button>
+                  </form>
+                {% elif m.statut == 'accepté' %}
+                  <span class="badge-mentor badge-teal">Matché <i class="bi bi-check-circle"></i></span>
+                {% elif m.statut == 'refusé' %}
+                  <span class="badge-mentor badge-blue">Refusé</span>
+                {% elif m.mentore_id == request.user.id %}
+                  <span class="badge-mentor badge-blue">En attente de réponse</span>
+                {% else %}
+                  <div class="d-flex gap-1">
+                    <form method="post" action="{% url 'matching:accepter' m.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-primary-mentor" style="font-size:0.78rem; padding:0.4rem 0.6rem;">Accepter</button>
+                    </form>
+                    <form method="post" action="{% url 'matching:refuser' m.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-outline-mentor" style="font-size:0.78rem; padding:0.4rem 0.6rem;">Refuser</button>
+                    </form>
+                  </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <p class="text-muted">Aucun résultat de matching pour le moment. Renseigne tes compétences et disponibilités dans ton profil pour obtenir des suggestions.</p>
+      {% endfor %}
+    </div>
+
+    <div class="col-lg-4">
+      <!-- DEMANDES REÇUES -->
+      {% if demandes_recues %}
+      <div class="card-mentor mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-bell"></i> Demandes de matching reçues</h5>
+        {% for demande in demandes_recues %}
+          <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid var(--gray-100);">
+            <div>
+              <div class="fw-semibold" style="font-size:0.85rem;">{{ demande.mentore.prenom }} {{ demande.mentore.nom }}</div>
+              <span class="badge-mentor badge-blue" style="font-size:0.7rem;">{{ demande.score|floatformat:0 }}% compatibilité</span>
+            </div>
+            <div class="d-flex gap-1">
+              <form method="post" action="{% url 'matching:accepter' demande.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-primary-mentor" style="font-size:0.78rem; padding:0.3rem 0.6rem;">Accepter</button>
+              </form>
+              <form method="post" action="{% url 'matching:refuser' demande.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-outline-mentor" style="font-size:0.78rem; padding:0.3rem 0.6rem;">Refuser</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- MES MATCHINGS ACCEPTÉS -->
+      {% if matchings_acceptes %}
+      <div class="card-mentor mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-people"></i> Mes matchings</h5>
+        {% for matching in matchings_acceptes %}
+          {% if matching.mentor_id == request.user.id %}
+            {% with autre=matching.mentore %}
+            <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid var(--gray-100);">
+              <div class="fw-semibold" style="font-size:0.85rem;">{{ autre.prenom }} {{ autre.nom }}</div>
+              <a href="{% url 'messaging:demarrer_conversation' autre.id %}" class="btn-outline-mentor" style="font-size:0.78rem; padding:0.3rem 0.6rem;"><i class="bi bi-chat-dots"></i></a>
+            </div>
+            {% endwith %}
+          {% else %}
+            {% with autre=matching.mentor %}
+            <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid var(--gray-100);">
+              <div class="fw-semibold" style="font-size:0.85rem;">{{ autre.prenom }} {{ autre.nom }}</div>
+              <a href="{% url 'messaging:demarrer_conversation' autre.id %}" class="btn-outline-mentor" style="font-size:0.78rem; padding:0.3rem 0.6rem;"><i class="bi bi-chat-dots"></i></a>
+            </div>
+            {% endwith %}
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- MON OFFRE DE MENTORAT -->
+      <div class="card-mentor mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-megaphone"></i> Mon offre de mentorat</h5>
+        <button type="button" class="btn-primary-mentor w-100 text-center mb-2" onclick="openOfferModal('offre')">
+          <i class="bi bi-plus-circle me-1"></i>Publier une offre
+        </button>
+        <button type="button" class="btn-accent-mentor w-100 text-center" onclick="openOfferModal('demande')">
+          <i class="bi bi-search me-1"></i>Publier une demande
+        </button>
+      </div>
+
+      <!-- MES OFFRES -->
+      <div class="card-mentor">
+        <h5 class="fw-bold mb-3">Mes offres publiées</h5>
+        {% for offre in mes_offres %}
+          <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid var(--gray-100);">
+            <div>
+              <div class="fw-semibold" style="font-size:0.85rem;">{{ offre.competence.nom_competence }}</div>
+              <span class="badge-mentor badge-blue" style="font-size:0.7rem;">{{ offre.get_type_offre_display }}</span>
+              <span class="badge-mentor badge-teal" style="font-size:0.7rem;">{{ offre.get_format_display }}</span>
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-muted" style="font-size:0.85rem;">Aucune offre publiée pour le moment.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OFFRE / DEMANDE -->
+<div class="modal-overlay" id="offerModal" style="display:none;" onclick="closeOfferOutside(event)">
+  <div class="modal-box">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <h6 style="font-weight:700; margin:0;" id="offerModalTitle">Publier une offre de mentorat</h6>
+      <button type="button" onclick="closeOfferModal()" style="background:none; border:none; font-size:1.2rem; color:var(--gray-400); cursor:pointer;">&times;</button>
+    </div>
+    <p style="font-size:0.82rem; color:var(--gray-400); margin-bottom:1.25rem;" id="offerModalSubtitle"></p>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label-mentor">{{ offre_form.competence.label }}</label>
+        {{ offre_form.competence }}
+      </div>
+      <div class="mb-3" id="typeOffreField">
+        <label class="form-label-mentor">{{ offre_form.type_offre.label }}</label>
+        {{ offre_form.type_offre }}
+      </div>
+      <div class="mb-4">
+        <label class="form-label-mentor">{{ offre_form.format.label }}</label>
+        {{ offre_form.format }}
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="button" class="btn-outline-mentor" style="flex:1;" onclick="closeOfferModal()">Annuler</button>
+        <button type="submit" class="btn-primary-mentor" style="flex:1;">Publier</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentFilter = 'tous';
+
+  function setFilter(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.classList.toggle('active', chip.dataset.filter === filter);
+    });
+    filterCards();
+  }
+
+  function filterCards() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.match-result-card').forEach(card => {
+      const name = card.dataset.name || '';
+      let visible = name.includes(query);
+
+      if (visible) {
+        if (currentFilter === 'filiere') {
+          visible = card.dataset.sameFiliere === '1';
+        } else if (currentFilter === 'niveau') {
+          visible = card.dataset.sameNiveau === '1';
+        } else if (currentFilter === 'score') {
+          visible = parseInt(card.dataset.score, 10) >= 70;
+        }
+      }
+
+      card.classList.toggle('hidden', !visible);
+    });
+  }
+
+  function openOfferModal(type) {
+    const titre = document.getElementById('offerModalTitle');
+    const sous = document.getElementById('offerModalSubtitle');
+    const select = document.querySelector('#typeOffreField select');
+    if (type === 'demande') {
+      titre.textContent = 'Publier une demande de mentorat';
+      sous.textContent = "Indique la matière où tu as besoin d'aide.";
+    } else {
+      titre.textContent = 'Publier une offre de mentorat';
+      sous.textContent = 'Indique la matière dans laquelle tu peux aider.';
+    }
+    if (select) select.value = type;
+    document.getElementById('offerModal').style.display = 'flex';
+  }
+  function closeOfferModal() {
+    document.getElementById('offerModal').style.display = 'none';
+  }
+  function closeOfferOutside(e) {
+    if (e.target === document.getElementById('offerModal')) closeOfferModal();
+  }
+</script>
+{% endblock %}

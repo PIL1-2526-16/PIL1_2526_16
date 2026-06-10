@@ -1,26 +1,56 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - IFRI MentorLink</title>
-</head>
-<body>
-    <h1>Se connecter</h1>
+{% extends "base.html" %}
+
+{% block title %}Connexion — MentorLink{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="auth-bg">
+  <div class="login-card">
+    <div class="text-center mb-4">
+      <a class="navbar-brand" href="{% url 'accueil' %}" style="font-size:1.8rem; justify-content:center;">Mentor<span>Link</span></a>
+      <p style="font-size:0.88rem; color:var(--gray-400); margin-top:0.5rem;">Connecte-toi à ton compte</p>
+    </div>
 
     {% if messages %}
+      <ul class="messages">
         {% for message in messages %}
-            <p>{{ message }}</p>
+          <li class="alert-mentor alert-{{ message.tags }}">{{ message }}</li>
         {% endfor %}
+      </ul>
     {% endif %}
 
     <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Se connecter</button>
+      {% csrf_token %}
+      <p>
+        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+      </p>
+      <p>
+        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        <div class="password-wrapper">
+          {{ form.password }}
+          <button type="button" class="password-toggle" onclick="togglePassword('{{ form.password.id_for_label }}', 'loginEyeIcon')">
+            <i class="bi bi-eye" id="loginEyeIcon"></i>
+          </button>
+        </div>
+        {{ form.password.errors }}
+      </p>
+      <button type="submit" class="btn-primary-mentor w-100 text-center py-3 mt-2" style="font-size:1rem;">
+        Se connecter
+      </button>
     </form>
 
-    <p><a href="{% url 'demande_reinitialisation' %}">Mot de passe oublié ?</a></p>
-    <p>Pas encore inscrit ? <a href="{% url 'inscription' %}">Créer un compte</a></p>
-</body>
-</html>
+    <div class="text-center mt-3">
+      <a href="{% url 'demande_reinitialisation' %}" style="font-size:0.85rem; color:var(--gray-400);">Mot de passe oublié ?</a>
+    </div>
+
+    <div class="divider">ou</div>
+
+    <p class="text-center" style="font-size:0.88rem;">
+      Pas encore inscrit ? <a href="{% url 'inscription' %}" style="font-weight:600;">Créer un compte</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

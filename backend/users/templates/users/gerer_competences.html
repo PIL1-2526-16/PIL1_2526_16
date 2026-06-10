@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Compétences et disponibilités — MentorLink{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:760px;">
+  <h2 class="section-title mb-4">Mes compétences et disponibilités</h2>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="alert-mentor alert-{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="card-mentor mb-4">
+      <h5 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning"></i> Points forts</h5>
+      {% for categorie in categories %}
+        {% if categorie.competences.all %}
+        <div class="category-title">{{ categorie.nom_categorie }}</div>
+        {% for competence in categorie.competences.all %}
+          <label class="tag-edit">
+            <input type="checkbox" name="points_forts" value="{{ competence.id }}" {% if competence.id in points_forts_ids %}checked{% endif %} onchange="toggleCompetence(this)">
+            {{ competence.nom_competence }}
+          </label>
+        {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="card-mentor mb-4">
+      <h5 class="fw-bold mb-3"><i class="bi bi-arrow-repeat text-info"></i> Points faibles</h5>
+      {% for categorie in categories %}
+        {% if categorie.competences.all %}
+        <div class="category-title">{{ categorie.nom_categorie }}</div>
+        {% for competence in categorie.competences.all %}
+          <label class="tag-edit">
+            <input type="checkbox" name="points_faibles" value="{{ competence.id }}" {% if competence.id in points_faibles_ids %}checked{% endif %} onchange="toggleCompetence(this)">
+            {{ competence.nom_competence }}
+          </label>
+        {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="card-mentor mb-4">
+      <h5 class="fw-bold mb-3"><i class="bi bi-calendar-week"></i> Disponibilités</h5>
+      <div id="dispo-rows">
+        {% for dispo in disponibilites %}
+        <div class="dispo-row">
+          <select name="jours" class="form-control-mentor">
+            {% for code, label in jours_choices %}
+              <option value="{{ code }}" {% if code == dispo.jour %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <input type="time" name="heures_debut" class="form-control-mentor" value="{{ dispo.heure_debut|time:'H:i' }}">
+          <input type="time" name="heures_fin" class="form-control-mentor" value="{{ dispo.heure_fin|time:'H:i' }}">
+          <button type="button" class="btn-remove-dispo" onclick="this.parentElement.remove()"><i class="bi bi-trash"></i></button>
+        </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="btn-outline-mentor mt-2" onclick="ajouterDisponibilite()"><i class="bi bi-plus"></i> Ajouter une disponibilité</button>
+    </div>
+
+    <button type="submit" class="btn-primary-mentor w-100 py-3" style="font-size:1rem;">Enregistrer</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="{% url 'profil' %}" style="font-size:0.85rem; color:var(--gray-400);">Annuler</a>
+  </div>
+</div>
+
+<template id="dispo-row-template">
+  <div class="dispo-row">
+    <select name="jours" class="form-control-mentor">
+      {% for code, label in jours_choices %}
+        <option value="{{ code }}">{{ label }}</option>
+      {% endfor %}
+    </select>
+    <input type="time" name="heures_debut" class="form-control-mentor">
+    <input type="time" name="heures_fin" class="form-control-mentor">
+    <button type="button" class="btn-remove-dispo" onclick="this.parentElement.remove()"><i class="bi bi-trash"></i></button>
+  </div>
+</template>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function ajouterDisponibilite() {
+    const template = document.getElementById('dispo-row-template');
+    const clone = template.content.cloneNode(true);
+    document.getElementById('dispo-rows').appendChild(clone);
+  }
+</script>
+{% endblock %}

@@ -1,25 +1,42 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réinitialiser le mot de passe - IFRI MentorLink</title>
-</head>
-<body>
-    <h1>Réinitialiser votre mot de passe</h1>
+{% extends "base.html" %}
+
+{% block title %}Mot de passe oublié — MentorLink{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="auth-bg">
+  <div class="login-card">
+    <div class="text-center mb-4">
+      <a class="navbar-brand" href="{% url 'accueil' %}" style="font-size:1.8rem; justify-content:center;">Mentor<span>Link</span></a>
+      <p style="font-size:0.88rem; color:var(--gray-400); margin-top:0.5rem;">Réinitialisation du mot de passe</p>
+    </div>
 
     {% if messages %}
+      <ul class="messages">
         {% for message in messages %}
-            <p>{{ message }}</p>
+          <li class="alert-mentor alert-{{ message.tags }}">{{ message }}</li>
         {% endfor %}
+      </ul>
     {% endif %}
 
+    <p style="font-size:0.88rem; color:var(--gray-600); margin-bottom:1.5rem;">
+      Saisis ton adresse email. Si un compte existe, tu recevras un lien pour réinitialiser ton mot de passe.
+    </p>
+
     <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Envoyer le lien</button>
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn-primary-mentor w-100 text-center py-3 mt-2" style="font-size:1rem;">
+        Envoyer le lien
+      </button>
     </form>
 
-    <a href="{% url 'connexion' %}">Retour à la connexion</a>
-</body>
-</html>
+    <div class="text-center mt-3">
+      <a href="{% url 'connexion' %}" style="font-size:0.82rem; color:var(--gray-400);">
+        <i class="bi bi-arrow-left me-1"></i>Retour à la connexion
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

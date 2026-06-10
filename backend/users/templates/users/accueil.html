@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}MentorLink — Accueil{% endblock %}
+
+{% block content %}
+
+  <!-- HERO -->
+  <section class="hero-gradient">
+    <div class="container position-relative" style="z-index:1;">
+      <p class="mb-2" style="font-size:0.85rem; opacity:0.8; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;">Plateforme de mentorat IFRI</p>
+      <h1 style="font-size:2.8rem; font-weight:700; margin-bottom:1rem; line-height:1.2;">
+        Trouve ton mentor idéal<br/>à l'IFRI
+      </h1>
+      <p style="font-size:1.1rem; opacity:0.9; max-width:520px; margin:0 auto 2rem;">
+        Connecte-toi avec des étudiants de ta filière pour du soutien académique et professionnel personnalisé.
+      </p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        {% if user.is_authenticated %}
+          <a href="{% url 'matching:liste' %}" class="btn-primary-mentor" style="background:white; color:var(--primary); font-size:1rem; padding:0.75rem 2rem;">
+            Voir mes matchings
+          </a>
+        {% else %}
+          <a href="{% url 'inscription' %}" class="btn-primary-mentor" style="background:white; color:var(--primary); font-size:1rem; padding:0.75rem 2rem;">
+            Commencer gratuitement
+          </a>
+        {% endif %}
+        <a href="{% url 'matching:liste' %}" class="btn-outline-mentor" style="border-color:white; color:white; font-size:1rem; padding:0.75rem 2rem; background:rgba(255,255,255,0.15);">
+          Voir les mentors
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="py-4" style="background:white; border-bottom:1px solid var(--gray-200);">
+    <div class="container">
+      <div class="row text-center g-4">
+        <div class="col-4">
+          <div style="font-size:2rem; font-weight:700; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">{{ nb_utilisateurs|default:"150+" }}</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">Étudiants inscrits</div>
+        </div>
+        <div class="col-4">
+          <div style="font-size:2rem; font-weight:700; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">5</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">Filières couvertes</div>
+        </div>
+        <div class="col-4">
+          <div style="font-size:2rem; font-weight:700; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">95%</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">Taux de satisfaction</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENT CA MARCHE -->
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Comment ça marche ?</h2>
+        <p class="section-subtitle">Trois étapes simples pour démarrer ton parcours de mentorat</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card-mentor h-100 text-center">
+            <div class="score-circle mx-auto mb-3" style="width:56px; height:56px; font-size:1.4rem;"><i class="bi bi-person-plus"></i></div>
+            <h5 class="fw-bold">1. Crée ton profil</h5>
+            <p class="text-muted" style="font-size:0.9rem;">Renseigne ta filière, ton niveau, tes points forts et tes points faibles.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-mentor h-100 text-center">
+            <div class="score-circle mx-auto mb-3" style="width:56px; height:56px; font-size:1.4rem;"><i class="bi bi-search"></i></div>
+            <h5 class="fw-bold">2. Trouve un match</h5>
+            <p class="text-muted" style="font-size:0.9rem;">Notre algorithme te propose les étudiants les plus compatibles avec toi.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-mentor h-100 text-center">
+            <div class="score-circle mx-auto mb-3" style="width:56px; height:56px; font-size:1.4rem;"><i class="bi bi-chat-dots"></i></div>
+            <h5 class="fw-bold">3. Échange et progresse</h5>
+            <p class="text-muted" style="font-size:0.9rem;">Discute directement via la messagerie et planifie vos sessions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENTORS DISPONIBLES -->
+  <section class="py-5" style="background:var(--gray-50);">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Mentors disponibles</h2>
+        <p class="section-subtitle">Quelques étudiants prêts à partager leurs compétences</p>
+      </div>
+      <div class="row g-4">
+        {% for mentor in mentors %}
+        <div class="col-md-4">
+          <div class="card-mentor h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-mentor">{{ mentor.prenom|slice:":1" }}{{ mentor.nom|slice:":1" }}</div>
+              <div>
+                <h6 class="fw-bold mb-0">{{ mentor.prenom }} {{ mentor.nom }}</h6>
+                <span class="badge-mentor badge-blue">{{ mentor.filiere }} · {{ mentor.niveau }}</span>
+              </div>
+            </div>
+            <p class="text-muted" style="font-size:0.88rem;">{{ mentor.bio|default:"Aucune bio renseignée pour le moment."|truncatewords:20 }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted">Aucun mentor disponible pour le moment.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="hero-gradient py-5">
+    <div class="container text-center">
+      <h2 class="fw-bold mb-3">Prêt à rejoindre la communauté MentorLink ?</h2>
+      <p class="mb-4" style="opacity:0.9;">Inscris-toi dès maintenant et trouve ton mentor idéal.</p>
+      {% if not user.is_authenticated %}
+      <a href="{% url 'inscription' %}" class="btn-primary-mentor" style="background:white; color:var(--primary); font-size:1rem; padding:0.75rem 2rem;">
+        S'inscrire gratuitement
+      </a>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background:var(--gray-800); color:var(--gray-400); text-align:center; padding:1.5rem; font-size:0.85rem;">
+    &copy; 2026 MentorLink — Projet intégrateur IFRI
+  </footer>
+
+{% endblock %}

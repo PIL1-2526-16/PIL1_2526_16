@@ -1,6 +1,6 @@
 # FORMULAIRES
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from .models import Utilisateur, Disponibilite, UtilisateurCompetence, Competence
 
 
@@ -37,6 +37,22 @@ class ModificationProfilForm(forms.ModelForm):
     class Meta:
         model = Utilisateur
         fields = ['nom', 'prenom', 'telephone', 'photo_profil', 'filiere', 'niveau', 'bio', 'centres_interet']
+
+
+# CHANGEMENT DE MOT DE PASSE (utilisateur connecté)
+class ChangerMotDePasseForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label="Mot de passe actuel",
+        widget=forms.PasswordInput(attrs={'placeholder': 'Mot de passe actuel'})
+    )
+    new_password1 = forms.CharField(
+        label="Nouveau mot de passe",
+        widget=forms.PasswordInput(attrs={'placeholder': 'Nouveau mot de passe'})
+    )
+    new_password2 = forms.CharField(
+        label="Confirmer le nouveau mot de passe",
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirmer le nouveau mot de passe'})
+    )
 
 
 # REINITIALISATION DU PROFIL

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MentorLink — Mon Profil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+  <style>
+    .profile-header { background: var(--gradient); padding: 3rem 2rem 5rem; text-align: center; color: white; }
+    .profile-card-floating { margin-top: -3rem; }
+    .availability-slot { display: inline-flex; align-items: center; gap: 6px; padding: 0.4rem 0.9rem; border-radius: 50px; background: var(--primary-light); color: var(--primary-dark); font-size: 0.82rem; font-weight: 500; margin: 3px; cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s; }
+    .availability-slot.active { background: var(--gradient); color: white; }
+    .stat-box { background: var(--gradient-soft); border-radius: var(--radius-sm); padding: 1rem; text-align: center; }
+    .edit-input { width: 100%; border: 1.5px solid var(--primary); border-radius: var(--radius-sm); padding: 0.6rem 0.9rem; font-size: 0.88rem; font-family: 'Poppins', sans-serif; color: var(--gray-800); outline: none; margin-top: 0.5rem; }
+    .tag-edit { display: inline-flex; align-items: center; gap: 4px; padding: 0.3rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-600); transition: all 0.2s; margin: 3px; }
+    .tag-edit.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .tag-edit:hover { border-color: var(--primary); }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR CONNECTÉE -->
+  <nav class="navbar-mentor">
+    <a class="navbar-brand" href="dashboard.html"><img src="../assets/logo.svg" alt="logo" width="28" height="28"/> Mentor<span>Link</span></a>
+    <div class="nav-links">
+      <a href="dashboard.html"><i class="bi bi-grid me-1"></i>Tableau de bord</a>
+      <a href="matching.html"><i class="bi bi-people me-1"></i>Matching</a>
+      <a href="chat.html"><i class="bi bi-chat me-1"></i>Messages</a>
+      <a href="profil.html" style="color:var(--primary); font-weight:600;"><i class="bi bi-person me-1"></i>Profil</a>
+      <button class="nav-logout" onclick="logout()"><i class="bi bi-box-arrow-right"></i>Déconnexion</button>
+    </div>
+  </nav>
+
+  <!-- HEADER PROFIL -->
+  <div class="profile-header">
+    <div style="position:relative; display:inline-block; margin-bottom:1rem;">
+      <!-- Avatar initiales (caché quand une photo est chargée) -->
+      <div class="avatar-lg" id="avatarDisplay" style="width:88px; height:88px; font-size:1.6rem;">CK</div>
+      <!-- Photo chargée -->
+      <img id="avatarImg" src="" alt="Photo de profil" style="display:none; width:88px; height:88px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.5);"/>
+      <!-- Bouton caméra positionné en bas à droite de l'avatar -->
+      <label for="photoInput" title="Modifier la photo de profil"
+        style="position:absolute; bottom:0; right:0; width:30px; height:30px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.25); border:2px solid rgba(255,255,255,0.6);">
+        <i class="bi bi-camera-fill" style="font-size:0.78rem; color:var(--primary);"></i>
+      </label>
+      <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoChange(event)"/>
+    </div>
+    <h2 style="font-weight:700; font-size:1.6rem;">Charbelle Kévin</h2>
+    <p style="opacity:0.85; font-size:0.9rem;">Sécurité Informatique · L1 · IFRI</p>
+    <div class="d-flex justify-content-center gap-2 mt-2">
+      <span class="badge-mentor" style="background:rgba(255,255,255,0.2); color:white;"><i class="bi bi-shield-check me-1"></i>Mentor disponible</span>
+    </div>
+  </div>
+
+  <div class="container profile-card-floating pb-5">
+    <div class="row g-4">
+
+      <!-- COLONNE GAUCHE -->
+      <div class="col-md-4">
+        <div class="card-mentor mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 style="font-weight:700; margin:0;">Informations</h6>
+            <button class="btn-outline-mentor" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="toggleEdit('infoEdit','infoView',this)">
+              <i class="bi bi-pencil me-1"></i>Modifier
+            </button>
+          </div>
+          <!-- Vue lecture -->
+          <div id="infoView" style="font-size:0.88rem; color:var(--gray-600);">
+            <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-envelope" style="color:var(--primary);"></i><span>charbelle@ifri.uac.bj</span></div>
+            <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-phone" style="color:var(--primary);"></i><span>+229 97 XX XX XX</span></div>
+            <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-geo-alt" style="color:var(--primary);"></i><span>Cotonou, Bénin</span></div>
+            <div class="d-flex align-items-center gap-2"><i class="bi bi-calendar3" style="color:var(--primary);"></i><span>Inscrit en juin 2026</span></div>
+          </div>
+          <!-- Vue édition -->
+          <div id="infoEdit" style="display:none; font-size:0.88rem;">
+            <label style="font-size:0.78rem; font-weight:600; color:var(--gray-400);">Téléphone</label>
+            <input class="edit-input" type="tel" value="+229 97 XX XX XX" />
+            <label style="font-size:0.78rem; font-weight:600; color:var(--gray-400); margin-top:0.5rem; display:block;">Ville</label>
+            <input class="edit-input" type="text" value="Cotonou, Bénin" />
+            <button class="btn-primary-mentor mt-3 w-100 text-center" onclick="saveEdit('infoEdit','infoView', this.closest('.card-mentor').querySelector('button'))">Enregistrer</button>
+          </div>
+        </div>
+
+        <div class="card-mentor mb-4">
+          <h6 style="font-weight:700; margin-bottom:1rem;">Statistiques</h6>
+          <div class="row g-2">
+            <div class="col-6"><div class="stat-box"><div style="font-size:1.4rem; font-weight:700; color:var(--primary);">3</div><div style="font-size:0.75rem; color:var(--gray-400);">Sessions</div></div></div>
+            <div class="col-6"><div class="stat-box"><div style="font-size:1.4rem; font-weight:700; color:var(--primary);">5</div><div style="font-size:0.75rem; color:var(--gray-400);">Connexions</div></div></div>
+            <div class="col-6"><div class="stat-box"><div style="font-size:1.4rem; font-weight:700; color:var(--primary);">4.8</div><div style="font-size:0.75rem; color:var(--gray-400);">Note /5</div></div></div>
+            <div class="col-6"><div class="stat-box"><div style="font-size:1.4rem; font-weight:700; color:var(--primary);">12h</div><div style="font-size:0.75rem; color:var(--gray-400);">De mentorat</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLONNE DROITE -->
+      <div class="col-md-8">
+
+        <!-- BIO -->
+        <div class="card-mentor mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 style="font-weight:700; margin:0;"><i class="bi bi-person-lines-fill me-2" style="color:var(--primary);"></i>Bio</h6>
+            <button class="btn-outline-mentor" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="toggleEdit('bioEdit','bioView',this)">Modifier</button>
+          </div>
+          <div id="bioView">
+            <p style="font-size:0.88rem; color:var(--gray-600); line-height:1.7;">
+              Étudiante en L1 Sécurité Informatique à l'IFRI. Passionnée par la cybersécurité et la data science. Je cherche à maîtriser Python et SQL, et je suis disponible pour du mentorat en développement web et algorithmique.
+            </p>
+          </div>
+          <div id="bioEdit" style="display:none;">
+            <textarea class="edit-input" rows="4">Étudiante en L1 Sécurité Informatique à l'IFRI. Passionnée par la cybersécurité et la data science. Je cherche à maîtriser Python et SQL, et je suis disponible pour du mentorat en développement web et algorithmique.</textarea>
+            <button class="btn-primary-mentor mt-3" onclick="saveEdit('bioEdit','bioView', this.closest('.card-mentor').querySelector('.btn-outline-mentor'))">Enregistrer</button>
+          </div>
+        </div>
+
+        <!-- POINTS FORTS -->
+        <div class="card-mentor mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 style="font-weight:700; margin:0;"><i class="bi bi-star me-2" style="color:var(--primary);"></i>Points forts</h6>
+            <button class="btn-outline-mentor" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="toggleEdit('strongEdit','strongView',this)">Modifier</button>
+          </div>
+          <div id="strongView" class="d-flex flex-wrap gap-2">
+            <span class="badge-mentor badge-blue">Développement web</span>
+            <span class="badge-mentor badge-blue">Algorithmique</span>
+            <span class="badge-mentor badge-blue">Python</span>
+            <span class="badge-mentor badge-blue">Cybersécurité</span>
+            <span class="badge-mentor badge-blue">Git</span>
+          </div>
+          <div id="strongEdit" style="display:none;">
+            <p style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.5rem;">Clique sur une compétence pour la sélectionner / désélectionner</p>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Développement web</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Algorithmique</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Python</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Cybersécurité</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Git</span>
+            <span class="tag-edit" onclick="toggleTag(this)">SQL</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Java</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Réseaux</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Machine Learning</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Linux</span>
+            <button class="btn-primary-mentor mt-3" onclick="saveEdit('strongEdit','strongView', this.closest('.card-mentor').querySelector('.btn-outline-mentor'))">Enregistrer</button>
+          </div>
+        </div>
+
+        <!-- POINTS FAIBLES -->
+        <div class="card-mentor mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 style="font-weight:700; margin:0;"><i class="bi bi-question-circle me-2" style="color:#f59e0b;"></i>Points faibles</h6>
+            <button class="btn-outline-mentor" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="toggleEdit('weakEdit','weakView',this)">Modifier</button>
+          </div>
+          <div id="weakView" class="d-flex flex-wrap gap-2">
+            <span class="badge-mentor" style="background:#fef3c7; color:#92400e;">Machine Learning</span>
+            <span class="badge-mentor" style="background:#fef3c7; color:#92400e;">Réseaux avancés</span>
+            <span class="badge-mentor" style="background:#fef3c7; color:#92400e;">Bases de données</span>
+          </div>
+          <div id="weakEdit" style="display:none;">
+            <p style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.5rem;">Clique sur une compétence pour la sélectionner / désélectionner</p>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Machine Learning</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Réseaux avancés</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Bases de données</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Deep Learning</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Cryptographie</span>
+            <span class="tag-edit" onclick="toggleTag(this)">DevOps</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Mathématiques discrètes</span>
+            <button class="btn-primary-mentor mt-3" onclick="saveEdit('weakEdit','weakView', this.closest('.card-mentor').querySelector('.btn-outline-mentor'))">Enregistrer</button>
+          </div>
+        </div>
+
+        <!-- DISPONIBILITÉS -->
+        <div class="card-mentor">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 style="font-weight:700; margin:0;"><i class="bi bi-clock me-2" style="color:var(--primary);"></i>Disponibilités</h6>
+            <button class="btn-outline-mentor" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="toggleEdit('dispoEdit','dispoView',this)">Modifier</button>
+          </div>
+          <div id="dispoView">
+            <div class="d-flex flex-wrap">
+              <span class="availability-slot active"><i class="bi bi-check-circle"></i>Lundi 14h–17h</span>
+              <span class="availability-slot active"><i class="bi bi-check-circle"></i>Mercredi 10h–12h</span>
+              <span class="availability-slot"><i class="bi bi-plus-circle"></i>Vendredi 15h–17h</span>
+              <span class="availability-slot"><i class="bi bi-plus-circle"></i>Samedi matin</span>
+            </div>
+            <div class="mt-3 d-flex gap-2">
+              <span class="badge-mentor badge-blue"><i class="bi bi-laptop me-1"></i>En ligne</span>
+              <span class="badge-mentor badge-blue"><i class="bi bi-building me-1"></i>Présentiel</span>
+              <span class="badge-mentor badge-teal"><i class="bi bi-arrows-angle-expand me-1"></i>Les deux</span>
+            </div>
+          </div>
+          <div id="dispoEdit" style="display:none;">
+            <p style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.5rem;">Jours</p>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Lundi</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Mardi</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Mercredi</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Jeudi</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Vendredi</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Samedi</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Dimanche</span>
+            <p style="font-size:0.78rem; color:var(--gray-400); margin:0.75rem 0 0.5rem;">Créneaux</p>
+            <span class="tag-edit" onclick="toggleTag(this)">Matin (8h–12h)</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)">Après-midi (12h–17h)</span>
+            <span class="tag-edit" onclick="toggleTag(this)">Soir (17h–21h)</span>
+            <p style="font-size:0.78rem; color:var(--gray-400); margin:0.75rem 0 0.5rem;">Mode</p>
+            <span class="tag-edit selected" onclick="toggleTag(this)"><i class="bi bi-laptop me-1"></i>En ligne</span>
+            <span class="tag-edit selected" onclick="toggleTag(this)"><i class="bi bi-building me-1"></i>Présentiel</span>
+            <span class="tag-edit" onclick="toggleTag(this)"><i class="bi bi-arrows-angle-expand me-1"></i>Les deux</span>
+            <button class="btn-primary-mentor mt-3" onclick="saveEdit('dispoEdit','dispoView', this.closest('.card-mentor').querySelector('.btn-outline-mentor'))">Enregistrer</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/main.js"></script>
+  <script src="../js/profil.js"></script>
+</body>
+</html>
