@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil - IFRI MentorLink</title>
+</head>
+<body>
+    <h1>Bienvenue sur IFRI MentorLink</h1>
+    <p>La plateforme de mentorat académique et professionnel de l'IFRI.</p>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'profil' %}">Mon profil</a>
+        <a href="{% url 'deconnexion' %}">Se déconnecter</a>
+    {% else %}
+        <a href="{% url 'inscription' %}">Créer un compte</a>
+        <a href="{% url 'connexion' %}">Se connecter</a>
+    {% endif %}
+</body>
+</html>

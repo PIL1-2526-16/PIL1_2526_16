@@ -5,6 +5,12 @@ from django.contrib import messages
 from .forms import (InscriptionForm, ConnexionForm, ModificationProfilForm,
                     DemandeReinitialisationForm, NouveauMotDePasseForm)
 from .models import Utilisateur, Disponibilite, UtilisateurCompetence
+from .models import Utilisateur, Disponibilite, UtilisateurCompetence, Competence
+
+
+# ACCUEIL
+def accueil(request):
+    return render(request, 'users/accueil.html')
 
 
 # INSCRIPTION
@@ -60,26 +66,51 @@ def profil(request):
 # MODIFICATION PROFIL
 @login_required
 def modifier_profil(request):
+    competences_disponibles = Competence.objects.all()
+    competences_actuelles = UtilisateurCompetence.objects.filter(
+        utilisateur=request.user
+    ).values_list('competence', flat=True)
+
     if request.method == 'POST':
         form = ModificationProfilForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
+            
+            # Mise à jour des disponibilités
             Disponibilite.objects.filter(utilisateur=request.user).delete()
             jours = request.POST.getlist('jours')
             heures_debut = request.POST.getlist('heures_debut')
             heures_fin = request.POST.getlist('heures_fin')
             for i in range(len(jours)):
-                Disponibilite.objects.create(
+                if heures_debut[i] and heures_fin[i]:
+                    Disponibilite.objects.create(
+                        utilisateur=request.user,
+                        jour=jours[i],
+                        heure_debut=heures_debut[i],
+                        heure_fin=heures_fin[i]
+                    )
+            
+            # Mise à jour des compétences
+            UtilisateurCompetence.objects.filter(utilisateur=request.user).delete()
+            competences_selectionnees = request.POST.getlist('competences')
+            type_competence = request.POST.get('type_competence')
+            for id_competence in competences_selectionnees:
+                UtilisateurCompetence.objects.create(
                     utilisateur=request.user,
-                    jour=jours[i],
-                    heure_debut=heures_debut[i],
-                    heure_fin=heures_fin[i]
+                    competence_id=id_competence,
+                    type_competence=type_competence
                 )
+            
             messages.success(request, "Profil mis à jour avec succès.")
             return redirect('profil')
     else:
         form = ModificationProfilForm(instance=request.user)
-    return render(request, 'users/modifier_profil.html', {'form': form})
+    
+    return render(request, 'users/modifier_profil.html', {
+        'form': form,
+        'competences_disponibles': competences_disponibles,
+        'competences_actuelles': competences_actuelles
+    })
 
 
 # REINITIALISATION DE MOT DE PASSE
