@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon profil - IFRI MentorLink</title>
+</head>
+<body>
+    <h1>{{ utilisateur.prenom }} {{ utilisateur.nom }}</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <p><strong>Email :</strong> {{ utilisateur.email }}</p>
+    <p><strong>Téléphone :</strong> {{ utilisateur.telephone }}</p>
+    <p><strong>Filière :</strong> {{ utilisateur.filiere }}</p>
+    <p><strong>Niveau :</strong> {{ utilisateur.niveau }}</p>
+    <p><strong>Bio :</strong> {{ utilisateur.bio }}</p>
+    <p><strong>Centres d'intérêt :</strong> {{ utilisateur.centres_interet }}</p>
+
+    <h2>Disponibilités</h2>
+    {% for dispo in disponibilites %}
+        <p>{{ dispo.jour }} : {{ dispo.heure_debut }} - {{ dispo.heure_fin }}</p>
+    {% empty %}
+        <p>Aucune disponibilité renseignée.</p>
+    {% endfor %}
+
+    <h2>Compétences</h2>
+    {% for comp in competences %}
+        <p>{{ comp.competence.nom_competence }} — {{ comp.type_competence }}</p>
+    {% empty %}
+        <p>Aucune compétence renseignée.</p>
+    {% endfor %}
+
+    <a href="{% url 'modifier_profil' %}">Modifier mon profil</a>
+    <a href="{% url 'deconnexion' %}">Se déconnecter</a>
+</body>
+</html>
