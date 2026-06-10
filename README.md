@@ -176,50 +176,63 @@ Le CSS est découpé en fichiers séparés — **un fichier = une responsabilit�
 
 ```
 PIL1_2526_16/
-├── README.md                      ← Ce fichier
-├── rapport.html                   ← Rapport de projet en HTML
-├── schema.sql                     ← Structure finale de la base de données
-└── frontend/
-    ├── pages/
-    │   ├── index.html             ← Page d'accueil
-    │   ├── login.html             ← Connexion
-    │   ├── register.html          ← Inscription
-    │   ├── profil.html            ← Profil utilisateur
-    │   ├── matching.html          ← Mise en correspondance
-    │   └── chat.html              ← Messagerie
-    ├── css/
-    │   ├── base.css
-    │   ├── buttons.css
-    │   ├── navbar.css
-    │   ├── forms.css
-    │   ├── cards.css
-    │   ├── auth.css
-    │   ├── hero.css
-    │   ├── profil.css
-    │   ├── matching.css
-    │   └── chat.css
-    └── assets/
-        ├── images/
-        └── icons/
+├── README.md                          ← Ce fichier
+├── Rapport_html.html                  ← Rapport de projet en HTML
+├── PIL1_2526_16.sql                   ← MCD/MLD original conçu en amont
+├── PIL1_2526_16_structure_mysql.sql   ← Structure réelle (issue des migrations Django) + données de référence
+├── requirements.txt                   ← Dépendances Python
+│
+├── frontend/                          ← Maquette statique de référence (design system)
+│   ├── pages/                         ← index, login, register, profil, matching, chat...
+│   ├── css/                           ← base, buttons, navbar, forms, cards, auth, hero,
+│   │                                     profil, matching, chat...
+│   ├── js/                            ← main.js, matching.js, chat.js...
+│   └── assets/                        ← images, icônes
+│
+├── backend/                           ← Application Django (site réellement déployé)
+│   ├── manage.py
+│   ├── .env                           ← Variables d'environnement (non versionné)
+│   ├── .env.example                   ← Modèle de configuration
+│   ├── db.sqlite3                     ← Ancienne base de dev (non utilisée en MySQL)
+│   │
+│   ├── mentorlink/                    ← Configuration du projet (settings, urls, wsgi)
+│   ├── users/                         ← Comptes, profils, compétences, disponibilités
+│   ├── matching/                      ← Offres/demandes de mentorat, algorithme de matching
+│   ├── messaging/                     ← Conversations et messages
+│   │
+│   ├── templates/                     ← Templates de base (base.html)
+│   ├── static/                        ← Copie des CSS/JS/assets de frontend/, servie par Django
+│   └── media/                         ← Fichiers uploadés (photos de profil, pièces jointes)
 ```
+
+> Le dossier `frontend/` reste la **référence visuelle** (design system : couleurs, composants,
+> classes CSS). Toute évolution de style doit être faite à la fois dans `frontend/css/` et dans
+> `backend/static/css/` pour rester synchronisée.
 
 ---
 
 ## 6. Base de données
 
-Le fichier `schema.sql` contient la structure complète de la base de données MySQL/PostgreSQL.
+L'application utilise **MySQL** (base `ifri_mentorlink`).
+
+- `PIL1_2526_16.sql` : MCD/MLD conçu en amont du projet (structure relationnelle de référence)
+- `PIL1_2526_16_structure_mysql.sql` : structure **réellement utilisée**, générée depuis les
+  migrations Django (`manage.py migrate`), avec les données de référence (catégories et
+  compétences) déjà insérées
 
 ### Tables principales
 
 | Table | Description |
 |---|---|
-| `utilisateurs` | Comptes et informations personnelles |
-| `profils` | Compétences, filière, niveau, bio, disponibilités |
-| `competences` | Liste des matières et compétences disponibles |
-| `offres_mentorat` | Offres et demandes publiées |
-| `matchs` | Résultats de correspondance avec scores |
-| `conversations` | Sessions de messagerie entre utilisateurs |
-| `messages` | Messages échangés dans chaque conversation |
+| `users_utilisateur` | Comptes et informations personnelles (auth, profil) |
+| `users_categorie` | Catégories de compétences (10 catégories) |
+| `users_competence` | Compétences/matières disponibles (66 compétences) |
+| `users_utilisateurcompetence` | Points forts / points faibles par utilisateur |
+| `users_disponibilite` | Créneaux de disponibilité par utilisateur |
+| `matching_offrementorat` | Offres et demandes de mentorat publiées |
+| `matching_matching` | Résultats de correspondance avec scores |
+| `messaging_conversation` | Conversations entre deux utilisateurs |
+| `messaging_message` | Messages échangés dans chaque conversation |
 
 ---
 
@@ -227,9 +240,9 @@ Le fichier `schema.sql` contient la structure complète de la base de données M
 
 ### Prérequis
 
-- Python 3.10+
+- Python 3.10+ (testé avec 3.14)
 - pip
-- MySQL ou PostgreSQL
+- MySQL Server 8.x
 - Git
 
 ### Étapes
@@ -256,26 +269,32 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**4. Configurer la base de données**
+**4. Configurer la base de données MySQL**
+
+Créer la base (vide ou avec les données de référence) :
 ```bash
-# Créer la base de données puis importer le schéma
-mysql -u root -p mentorlink < schema.sql
+# Vide (les migrations créeront les tables)
+mysql -u root -p -e "CREATE DATABASE ifri_mentorlink CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# OU avec structure + catégories/compétences déjà prêtes
+mysql -u root -p ifri_mentorlink < PIL1_2526_16_structure_mysql.sql
 ```
 
 **5. Configurer les variables d'environnement**
 
-Créer un fichier `.env` à la racine :
+Dans `backend/`, copier `.env.example` vers `.env` et renseigner :
 ```
-DB_NAME=mentorlink
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=ifri_mentorlink
 DB_USER=root
 DB_PASSWORD=ton_mot_de_passe
 DB_HOST=localhost
 DB_PORT=3306
-SECRET_KEY=ta_cle_secrete
 ```
 
-**6. Lancer le serveur**
+**6. Appliquer les migrations et lancer le serveur**
 ```bash
+cd backend
 python manage.py migrate
 python manage.py runserver
 ```
@@ -307,7 +326,7 @@ Ouvrir le navigateur sur : `http://127.0.0.1:8000`
 1. Aller dans l'onglet **Matching**
 2. Consulter les résultats proposés automatiquement par l'algorithme
 3. Filtrer par matière, format (en ligne / présentiel) ou disponibilité
-4. Cliquer sur **Contacter** pour envoyer un message
+4. Cliquer sur **Message** pour envoyer un message
 
 ### Publier une offre ou demande de mentorat
 
@@ -336,7 +355,7 @@ Ouvrir le navigateur sur : `http://127.0.0.1:8000`
 | **Frontend** | HTML5 sémantique, CSS3 modulaire, JavaScript |
 | **Framework CSS** | Bootstrap 5.3 |
 | **Backend** | Python 3, Django |
-| **Base de données** | MySQL / PostgreSQL |
+| **Base de données** | MySQL |
 | **Versioning** | Git & GitHub |
 | **Police** | Poppins (Google Fonts) |
 | **Icônes** | Bootstrap Icons |
@@ -354,4 +373,3 @@ Ouvrir le navigateur sur : `http://127.0.0.1:8000`
 ---
 
 *IFRI — Université d'Abomey-Calavi — Projet Intégrateur L1 2025-2026 — Groupe PIL1_2526_16*
-
