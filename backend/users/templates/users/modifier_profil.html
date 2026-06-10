@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier mon profil — MentorLink{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:760px;">
+  <h2 class="section-title mb-4">Modifier mon profil</h2>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="alert-mentor alert-{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="card-mentor mb-4">
+      <h5 class="fw-bold mb-3">Informations générales</h5>
+      {{ form.as_p }}
+    </div>
+
+    <button type="submit" class="btn-primary-mentor w-100 py-3" style="font-size:1rem;">Enregistrer</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="{% url 'profil' %}" style="font-size:0.85rem; color:var(--gray-400);">Annuler</a>
+  </div>
+</div>
+{% endblock %}

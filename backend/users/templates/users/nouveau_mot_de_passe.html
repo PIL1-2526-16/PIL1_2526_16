@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Nouveau mot de passe — MentorLink{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="auth-bg">
+  <div class="login-card">
+    <div class="text-center mb-4">
+      <a class="navbar-brand" href="{% url 'accueil' %}" style="font-size:1.8rem; justify-content:center;">Mentor<span>Link</span></a>
+      <p style="font-size:0.88rem; color:var(--gray-400); margin-top:0.5rem;">Choisis un nouveau mot de passe</p>
+    </div>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="alert-mentor alert-{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <p>
+          {{ field.label_tag }}
+          <div class="password-wrapper">
+            {{ field }}
+            <button type="button" class="password-toggle" onclick="togglePassword('{{ field.id_for_label }}', 'eye_{{ field.name }}')">
+              <i class="bi bi-eye" id="eye_{{ field.name }}"></i>
+            </button>
+          </div>
+          {{ field.errors }}
+          {% if field.help_text %}<span class="helptext">{{ field.help_text|safe }}</span>{% endif %}
+        </p>
+      {% endfor %}
+      <button type="submit" class="btn-primary-mentor w-100 text-center py-3 mt-2" style="font-size:1rem;">
+        Confirmer
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

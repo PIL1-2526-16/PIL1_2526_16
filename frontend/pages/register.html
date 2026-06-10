@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MentorLink — Inscription</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+  <style>
+    body { background: var(--gradient-soft); min-height: 100vh; padding: 2rem 1rem; }
+    .register-card { background: white; border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 620px; margin: 0 auto; box-shadow: var(--shadow-lg); }
+    .step-indicator { display: flex; align-items: center; margin-bottom: 2rem; }
+    .step { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 600; flex-shrink: 0; }
+    .step.active { background: var(--gradient); color: white; }
+    .step.done { background: #dcfce7; color: #166534; }
+    .step.pending { background: var(--gray-100); color: var(--gray-400); }
+    .step-line { flex: 1; height: 2px; background: var(--gray-200); }
+    .step-line.done { background: var(--primary); }
+    .tag-skill { display: inline-flex; align-items: center; gap: 4px; padding: 0.3rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-600); transition: all 0.2s; margin: 3px; user-select: none; }
+    .tag-skill.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .tag-skill.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    .tag-skill:not(.disabled):hover { border-color: var(--primary); }
+    .category-title { font-size: 0.75rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin: 0.75rem 0 0.3rem; width: 100%; }
+    .dispo-slot { display: inline-flex; align-items: center; gap: 6px; padding: 0.45rem 1rem; border-radius: 50px; font-size: 0.82rem; font-weight: 500; cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-600); transition: all 0.2s; margin: 4px; user-select: none; }
+    .dispo-slot.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .step-label { font-size: 0.82rem; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+
+  <div style="text-align:center; margin-bottom:1.5rem;">
+    <a class="navbar-brand" href="index.html" style="font-size:1.6rem;">Mentor<span>Link</span></a>
+  </div>
+
+  <div class="register-card">
+    <h4 style="font-weight:700; margin-bottom:0.3rem;">Créer mon compte</h4>
+    <p style="font-size:0.88rem; color:var(--gray-400); margin-bottom:1.5rem;">Rejoins la communauté de mentorat IFRI</p>
+
+    <div class="step-indicator" id="stepIndicator">
+      <div class="step active" id="s1">1</div>
+      <div class="step-line" id="l1"></div>
+      <div class="step pending" id="s2">2</div>
+      <div class="step-line" id="l2"></div>
+      <div class="step pending" id="s3">3</div>
+    </div>
+
+    <!-- ÉTAPE 1 -->
+    <div id="step1">
+      <p class="step-label">Informations personnelles</p>
+      <div class="row g-3">
+        <div class="col-6">
+          <label class="form-label-mentor">Nom</label>
+          <input type="text" class="form-control-mentor" placeholder="Ton nom de famille" />
+        </div>
+        <div class="col-6">
+          <label class="form-label-mentor">Prénom</label>
+          <input type="text" class="form-control-mentor" placeholder="Ton prénom" />
+        </div>
+        <div class="col-12">
+          <label class="form-label-mentor">Adresse email</label>
+          <div style="position:relative;">
+            <i class="bi bi-envelope" style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--gray-400);"></i>
+            <input type="email" class="form-control-mentor" placeholder="nom@ifri.uac.bj" style="padding-left:2.5rem;" />
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label-mentor">Numéro de téléphone</label>
+          <div style="position:relative;">
+            <i class="bi bi-phone" style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--gray-400);"></i>
+            <input type="tel" class="form-control-mentor" placeholder="+229 XX XX XX XX" style="padding-left:2.5rem;" />
+          </div>
+        </div>
+        <div class="col-6">
+          <label class="form-label-mentor">Filière</label>
+          <select class="form-control-mentor">
+            <option value="">Choisir...</option>
+            <option>Intelligence Artificielle</option>
+            <option>Informatique et Mathématiques</option>
+            <option>Génie Logiciel</option>
+            <option>Systèmes Embarqués & IoT</option>
+            <option>Sécurité Informatique</option>
+            <option>Systèmes d'Information</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label-mentor">Niveau</label>
+          <select class="form-control-mentor">
+            <option>L1</option>
+            <option>L2</option>
+            <option>L3</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label-mentor">Mot de passe</label>
+          <div style="position:relative;">
+            <i class="bi bi-lock" style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--gray-400);"></i>
+            <input type="password" class="form-control-mentor" placeholder="Minimum 8 caractères" style="padding-left:2.5rem;" />
+          </div>
+        </div>
+      </div>
+
+      <!-- POINTS FORTS -->
+      <div class="mt-4">
+        <p style="font-size:0.85rem; font-weight:600; color:var(--gray-600); margin-bottom:0.25rem;">
+          <i class="bi bi-star me-1" style="color:var(--primary);"></i>Points forts (matières maîtrisées)
+        </p>
+        <p style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.5rem;">Sélectionne les matières que tu maîtrises — elles seront automatiquement exclues de tes points faibles</p>
+        <div id="strengths" class="d-flex flex-wrap"></div>
+      </div>
+
+      <!-- POINTS FAIBLES -->
+      <div class="mt-4">
+        <p style="font-size:0.85rem; font-weight:600; color:var(--gray-600); margin-bottom:0.25rem;">
+          <i class="bi bi-question-circle me-1" style="color:#f59e0b;"></i>Points faibles (où tu as besoin d'aide)
+        </p>
+        <p style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.5rem;">Les matières déjà sélectionnées comme points forts ne sont pas disponibles ici</p>
+        <div id="weaknesses" class="d-flex flex-wrap"></div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <a href="login.html" style="font-size:0.85rem; color:var(--gray-400); text-decoration:none;">
+          <i class="bi bi-arrow-left me-1"></i>Déjà inscrit ? Connexion
+        </a>
+        <button class="btn-primary-mentor" onclick="goToStep(2)">
+          Suivant <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 -->
+    <div id="step2" style="display:none;">
+      <p class="step-label">Mes disponibilités</p>
+      <p style="font-size:0.88rem; color:var(--gray-600); margin-bottom:1.25rem;">Indique les créneaux où tu es disponible pour des sessions de mentorat.</p>
+      <div class="mb-3">
+        <p style="font-size:0.85rem; font-weight:600; color:var(--gray-600); margin-bottom:0.5rem;">Jours disponibles</p>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Lundi</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Mardi</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Mercredi</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Jeudi</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Vendredi</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Samedi</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Dimanche</span>
+      </div>
+      <div class="mb-3">
+        <p style="font-size:0.85rem; font-weight:600; color:var(--gray-600); margin-bottom:0.5rem;">Créneaux horaires</p>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Matin (8h – 12h)</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Après-midi (12h – 17h)</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')">Soir (17h – 21h)</span>
+      </div>
+      <div class="mb-4">
+        <p style="font-size:0.85rem; font-weight:600; color:var(--gray-600); margin-bottom:0.5rem;">Mode de session</p>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')"><i class="bi bi-laptop me-1"></i>En ligne</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')"><i class="bi bi-building me-1"></i>Présentiel</span>
+        <span class="dispo-slot" onclick="this.classList.toggle('selected')"><i class="bi bi-arrows-angle-expand me-1"></i>Les deux</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <button class="btn-outline-mentor" onclick="goToStep(1)"><i class="bi bi-arrow-left me-1"></i>Retour</button>
+        <button class="btn-primary-mentor" onclick="goToStep(3)">Suivant <i class="bi bi-arrow-right ms-1"></i></button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 -->
+    <div id="step3" style="display:none;">
+      <p class="step-label">Confirmation</p>
+      <div style="background:var(--gradient-soft); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem; text-align:center;">
+        <div class="avatar-lg mb-3" style="margin:0 auto 1rem;">?</div>
+        <h5 style="font-weight:700; margin-bottom:0.25rem;">Ton profil est prêt !</h5>
+        <p style="font-size:0.85rem; color:var(--gray-400);">Vérifie tes informations avant de créer ton compte.</p>
+      </div>
+      <div style="font-size:0.88rem; color:var(--gray-600); line-height:2;">
+        <div class="d-flex align-items-center gap-2 mb-1"><i class="bi bi-check-circle-fill" style="color:var(--primary);"></i><span>Informations personnelles renseignées</span></div>
+        <div class="d-flex align-items-center gap-2 mb-1"><i class="bi bi-check-circle-fill" style="color:var(--primary);"></i><span>Compétences sélectionnées</span></div>
+        <div class="d-flex align-items-center gap-2 mb-1"><i class="bi bi-check-circle-fill" style="color:var(--primary);"></i><span>Disponibilités renseignées</span></div>
+      </div>
+      <div class="mt-4">
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="cgu" />
+          <label class="form-check-label" for="cgu" style="font-size:0.85rem; color:var(--gray-600);">J'accepte les conditions d'utilisation de MentorLink</label>
+        </div>
+        <button class="btn-primary-mentor w-100 text-center py-3" style="font-size:1rem;" onclick="window.location.href='dashboard.html'">
+          <i class="bi bi-rocket-takeoff me-2"></i>Créer mon compte
+        </button>
+      </div>
+      <div class="d-flex justify-content-start mt-3">
+        <button class="btn-outline-mentor" onclick="goToStep(2)"><i class="bi bi-arrow-left me-1"></i>Retour</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/register.js"></script>
+  <script>
+    const CATEGORIES = [
+      { title: 'Programmation', skills: ['Python','Java','C / C++','JavaScript','PHP','Rust'] },
+      { title: 'Web & Mobile',  skills: ['HTML / CSS','React','Django','Flutter','Node.js'] },
+      { title: 'Bases de données', skills: ['SQL','MySQL','PostgreSQL','MongoDB','Merise / UML'] },
+      { title: 'Algorithmique & Maths', skills: ['Algorithmique','Structures de données','Mathématiques discrètes','Algèbre linéaire','Probabilités & Statistiques'] },
+      { title: 'Réseaux & Systèmes', skills: ['Réseaux','Linux','Administration système','Protocoles TCP/IP'] },
+      { title: 'Intelligence Artificielle', skills: ['Machine Learning','Deep Learning','NLP','Computer Vision'] },
+      { title: 'Sécurité', skills: ['Cybersécurité','Cryptographie','Ethical Hacking'] },
+      { title: 'Génie Logiciel', skills: ['Git / GitHub','Génie logiciel','Tests & Qualité','DevOps'] },
+    ];
+
+    function buildTags() {
+      const sDiv = document.getElementById('strengths');
+      const wDiv = document.getElementById('weaknesses');
+      CATEGORIES.forEach(cat => {
+        const st = document.createElement('div');
+        st.className = 'category-title'; st.textContent = cat.title; sDiv.appendChild(st);
+        const wt = document.createElement('div');
+        wt.className = 'category-title'; wt.textContent = cat.title; wDiv.appendChild(wt);
+        cat.skills.forEach(skill => {
+          const key = skill.toLowerCase();
+          // Tag côté forces
+          const ts = document.createElement('span');
+          ts.className = 'tag-skill'; ts.textContent = skill; ts.dataset.key = key;
+          ts.onclick = () => {
+            ts.classList.toggle('selected');
+            // Mettre à jour le tag correspondant dans les faiblesses
+            const tw = wDiv.querySelector('[data-key="' + key + '"]');
+            if (ts.classList.contains('selected')) {
+              tw.classList.add('disabled'); tw.classList.remove('selected');
+            } else {
+              tw.classList.remove('disabled');
+            }
+          };
+          sDiv.appendChild(ts);
+          // Tag côté faiblesses
+          const tw = document.createElement('span');
+          tw.className = 'tag-skill'; tw.textContent = skill; tw.dataset.key = key;
+          tw.onclick = () => {
+            tw.classList.toggle('selected');
+            const ts2 = sDiv.querySelector('[data-key="' + key + '"]');
+            if (tw.classList.contains('selected')) {
+              ts2.classList.add('disabled'); ts2.classList.remove('selected');
+            } else {
+              ts2.classList.remove('disabled');
+            }
+          };
+          wDiv.appendChild(tw);
+        });
+      });
+    }
+    buildTags();
+
+    function goToStep(n) {
+      [1,2,3].forEach(i => document.getElementById('step'+i).style.display = i===n ? 'block' : 'none');
+      for (let i=1; i<=3; i++) {
+        const s = document.getElementById('s'+i);
+        if (i < n)      { s.className='step done'; s.innerHTML='<i class="bi bi-check" style="font-size:0.75rem;"></i>'; }
+        else if (i===n) { s.className='step active'; s.textContent=i; }
+        else            { s.className='step pending'; s.textContent=i; }
+      }
+      for (let i=1; i<=2; i++) document.getElementById('l'+i).className = i<n ? 'step-line done' : 'step-line';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+  </script>
+</body>
+</html>
